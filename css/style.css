@@ -623,7 +623,7 @@ figure.highlight {
   figure.highlight .code,
   figure.highlight .tag {
     background-color: inherit;
-    font-family: Menlo;
+    font-family: monospace;
     border: none;
     padding: 0;
     margin: 0;
@@ -653,11 +653,11 @@ figure.highlight {
       overflow-x: auto; }
   figure.highlight .line {
     height: 1.2em;
-    font-size: 13px; }
+    font-size: 14px; }
 
 .gist .line,
 .gist .line-number {
-  font-family: Menlo;
+  font-family: monospace;
   font-size: 1em;
   margin: 0 0 5px 0; }
 
