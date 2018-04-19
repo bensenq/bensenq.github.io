@@ -1,4 +1,131 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Chris Tsui's personal blog, mainly about computer tech."><title>Linux驱动模型Probe解惑 | Chris' Blog</title><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/5.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Linux驱动模型Probe解惑</h1><a id="logo" href="/.">Chris' Blog</a><p class="description">learning by making</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Linux驱动模型Probe解惑</h1><div class="post-meta">Oct 31, 2017<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><h2 id="u95EE_u9898"><a href="#u95EE_u9898" class="headerlink" title="问题"></a>问题</h2><p>首先来回顾下，Linux设备驱动模型中bus、device和driver三者的关系：</p>
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?"/>
+
+
+
+
+  <meta name="keywords" content="Driver," />
+
+
+
+
+
+  <link rel="alternative" href="/atom.xml" title="Chris' Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://bensenq.github.io/2017/10/31/驱动探测解疑/"/>
+
+
+<meta name="description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux驱动模型Probe解惑">
+<meta property="og:url" content="http://bensenq.github.io/2017/10/31/驱动探测解疑/index.html">
+<meta property="og:site_name" content="Chris' Blog">
+<meta property="og:description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
+<meta property="og:image" content="http://bensenq.github.io/images/driver_attatch.svg">
+<meta property="og:updated_time" content="2017-10-31T08:08:21.530Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux驱动模型Probe解惑">
+<meta name="twitter:description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+    <title> Linux驱动模型Probe解惑 - Chris' Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Chris' Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Linux驱动模型Probe解惑
+        
+      </h1>
+
+      <time class="post-time">
+          10月 31 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="u95EE_u9898"><a href="#u95EE_u9898" class="headerlink" title="问题"></a>问题</h2><p>首先来回顾下，Linux设备驱动模型中bus、device和driver三者的关系：</p>
 <ul>
 <li>bus是物理总线的抽象。</li>
 <li>device是设备抽象，存在于bus之上。</li>
@@ -31,4 +158,86 @@
 <p>我们想要的答案就在<code>__driver_attach</code>函数的实现里：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> __driver_attach(<span class="keyword">struct</span> device *dev, <span class="keyword">void</span> *data)</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">struct</span> device_driver *drv = data;</span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line"></span><br><span class="line">    ret = driver_match_device(drv, dev);</span><br><span class="line">    <span class="keyword">if</span> (ret == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">/* no match */</span></span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ret == -EPROBE_DEFER) &#123;</span><br><span class="line">            dev_dbg(dev, <span class="string">"Device match requests probe deferral\n"</span>);</span><br><span class="line">            driver_deferred_probe_add(dev);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            dev_dbg(dev, <span class="string">"Bus failed to match device: %d"</span>, ret);</span><br><span class="line">            <span class="keyword">return</span> ret;</span><br><span class="line">                    &#125; <span class="comment">/* ret &gt; 0 means positive match */</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (dev-&gt;parent)        <span class="comment">/* Needed for USB */</span></span><br><span class="line">                device_lock(dev-&gt;parent);</span><br><span class="line">        device_lock(dev);</span><br><span class="line">        <span class="keyword">if</span> (!dev-&gt;driver)</span><br><span class="line">                driver_probe_device(drv, dev);</span><br><span class="line">        device_unlock(dev);</span><br><span class="line">        <span class="keyword">if</span> (dev-&gt;parent)</span><br><span class="line">                device_unlock(dev-&gt;parent);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>可以看到，在<code>driver_match_device</code>匹配成功以后，并不是直接进行probe的，而是先要判断<code>dev-&gt;driver</code>是否为空，如果不为空就不进行<code>driver_probe_device</code>了。也就是说，如果一个device已经绑定了一个driver，就不允许尝试绑定第二个driver了。</p>
-</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://bensenq.github.io/2017/10/31/驱动探测解疑/" data-id="cjacln60x0005lzbhvfrol8hb" class="article-share-link">分享到</a><div class="tags"><a href="/tags/Driver/">Driver</a></div><div class="post-nav"><a href="/2017/11/23/ipmi-note/" class="pre">IPMI小记</a><a href="/2017/02/05/irq-balance/" class="next">IRQ Balance</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://bensenq.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/IPMI/" style="font-size: 15px;">IPMI</a> <a href="/tags/Server/" style="font-size: 15px;">Server</a> <a href="/tags/Driver/" style="font-size: 15px;">Driver</a> <a href="/tags/IRQ/" style="font-size: 15px;">IRQ</a> <a href="/tags/Perf/" style="font-size: 15px;">Perf</a> <a href="/tags/Docker/" style="font-size: 15px;">Docker</a> <a href="/tags/Kernel/" style="font-size: 15px;">Kernel</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/GNU/" style="font-size: 15px;">GNU</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/11/23/ipmi-note/">IPMI小记</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/31/驱动探测解疑/">Linux驱动模型Probe解惑</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/02/05/irq-balance/">IRQ Balance</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/02/Docker初试/">Docker初试</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/27/raw_readl/">readl和raw_readl语义区别</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/03/GNU三元操作符扩展/">GNU三元操作符扩展</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">Chris' Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          
+            <a href="/tags/Driver/">Driver</a>
+          
+        </div>
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/11/23/ipmi-note/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">IPMI小记</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/02/05/irq-balance/">
+        <span class="next-text nav-default">IRQ Balance</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2012 -
+    
+    2018
+    <span class="footer-author">Chris.</span>
+    <span class="power-by">
+        由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a> 强力驱动
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
