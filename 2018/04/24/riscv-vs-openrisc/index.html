@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="riscv与openrisc的不同。"/>
+
+
+
+
+  <meta name="keywords" content="Architecture,OpenRISC,RISC-V," />
+
+
+
+
+
+  <link rel="alternative" href="/atom.xml" title="Chris' Blog" type="application/atom+xml">
+
+
+
+
+
+
+<link rel="canonical" href="http://bensenq.github.io/2018/04/24/riscv-vs-openrisc/"/>
+
+
+<meta name="description" content="riscv与openrisc的不同。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RISC-V与OpenRISC">
+<meta property="og:url" content="http://bensenq.github.io/2018/04/24/riscv-vs-openrisc/index.html">
+<meta property="og:site_name" content="Chris' Blog">
+<meta property="og:description" content="riscv与openrisc的不同。">
+<meta property="og:updated_time" content="2018-04-24T14:33:50.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RISC-V与OpenRISC">
+<meta name="twitter:description" content="riscv与openrisc的不同。">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: true
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+    <title> RISC-V与OpenRISC - Chris' Blog </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">Chris' Blog</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          RISC-V与OpenRISC
+        
+      </h1>
+
+      <time class="post-time">
+          Apr 24 2018
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。</p>
+<h2 id="u5F00_u6E90_u534F_u8BAE"><a href="#u5F00_u6E90_u534F_u8BAE" class="headerlink" title="开源协议"></a>开源协议</h2><p>OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。</p>
+<h2 id="u6280_u672F_u5C42_u9762"><a href="#u6280_u672F_u5C42_u9762" class="headerlink" title="技术层面"></a>技术层面</h2><p>从RISC-V的官方的<a href="https://riscv.org/2014/10/why-not-build-on-openrisc/" target="_blank" rel="external">这篇Blog</a>来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：</p>
+<ul>
+<li>立即数占了16位编码，浪费了太多的编码空间，导致很难对指令进行扩展。(注：RISCV的立即数最多占12位)</li>
+<li>没有64位版本。尽管2010年已经开始了64位的相关工作，但是到2014年还没有可用的实现和软件栈。</li>
+<li>OpenRISC架构里还有大量的分支延迟间隙（branch delay slot）。</li>
+<li>没有压缩指令支持。</li>
+</ul>
+<p>(完)</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+        <div class="post-tags">
+          
+            <a href="/tags/Architecture/">Architecture</a>
+          
+            <a href="/tags/OpenRISC/">OpenRISC</a>
+          
+            <a href="/tags/RISC-V/">RISC-V</a>
+          
+        </div>
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/11/23/ipmi-note/">
+        <span class="next-text nav-default">IPMI小记</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2016 -
+    
+    2018
+    <span class="footer-author">Chris.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
