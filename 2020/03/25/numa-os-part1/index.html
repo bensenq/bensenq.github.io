@@ -44,7 +44,7 @@
 <meta property="og:image" content="http://bensenq.github.io/images/NUMA_Hierachy.png">
 <meta property="og:image" content="http://bensenq.github.io/images/NUMA_Distance.png">
 <meta property="article:published_time" content="2020-03-25T07:48:28.000Z">
-<meta property="article:modified_time" content="2020-03-25T08:19:14.574Z">
+<meta property="article:modified_time" content="2020-03-25T08:38:51.438Z">
 <meta property="article:author" content="Chris">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://bensenq.github.io/images/NUMA.png">
@@ -129,13 +129,13 @@
 
     
             <div class="post-content">
-            <h1 id="1-NUMA简介"><a href="#1-NUMA简介" class="headerlink" title="1. NUMA简介"></a>1. NUMA简介</h1><p>NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的”距离”并不相同，这里”距离”同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的”距离”以及设备与内存的”距离”也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。</p>
+            <h2 id="1-NUMA简介"><a href="#1-NUMA简介" class="headerlink" title="1. NUMA简介"></a>1. NUMA简介</h2><p>NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的”距离”并不相同，这里”距离”同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的”距离”以及设备与内存的”距离”也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。</p>
 <p>NUMA中使用Node表示一组资源（例如CPUs、Memory、I/O)。在某些系统中一个Node可能只包含某几类资源而不是全部，有些系统中一个Node就包括所以这些种类。Node间的互联有不同的形式，但是一般来说Node之间的延迟会比Node内大，而带宽通常会比Node内低。</p>
 <p><img src="/images/NUMA.png" alt="NUMA"></p>
 <p>NUMA上的软件聚焦在Locality上，即尽可能地使用离设备（这里CPU也是算设备）近的资源，减少Node间的数据流量交互。对于Node间有高速互联的系统，把对资源（内存和IO）的使用分散到不同的节点上，而不是仅仅使用本地资源，有时反而能够取得更好的系统带宽（原因是能够存储器控制器的利用率更高），但是这种方法并不普适。</p>
-<h1 id="2-NUMA-Hierarchy"><a href="#2-NUMA-Hierarchy" class="headerlink" title="2. NUMA Hierarchy"></a>2. NUMA Hierarchy</h1><p>NUMA Hierarchy就是NUMA的层级结构。一个Intel x86 NUMA系统就是由多个NUMA Node组成。</p>
-<h2 id="2-1-NUMA-Node内部"><a href="#2-1-NUMA-Node内部" class="headerlink" title="2.1 NUMA Node内部"></a>2.1 NUMA Node内部</h2><p>一个NUMA Node内部是由一个<strong>物理CPU</strong>和它所有的<strong>本地内存(Local Memory)</strong>组成的。广义得讲，<br>一个NUMA Node内部还包含<strong>本地IO资源</strong>，对大多数Intel x86 NUMA平台来说，主要是PCIe总线资源。<br>ACPI规范就是这么抽象一个NUMA Node的。</p>
-<h3 id="物理CPU"><a href="#物理CPU" class="headerlink" title="物理CPU"></a>物理CPU</h3><p>一个CPU Socket里可以由多个CPU Core和一个Uncore部分组成。每个CPU Core内部又可以由两个CPU Thread组成。每个CPU thread都是一个操作系统可见的逻辑CPU。对大多数操作系统来说，一个八核HT打开的CPU会被识别为16个CPU。</p>
+<h2 id="2-NUMA-Hierarchy"><a href="#2-NUMA-Hierarchy" class="headerlink" title="2. NUMA Hierarchy"></a>2. NUMA Hierarchy</h2><p>NUMA Hierarchy就是NUMA的层级结构。一个Intel x86 NUMA系统就是由多个NUMA Node组成。</p>
+<h3 id="2-1-NUMA-Node内部"><a href="#2-1-NUMA-Node内部" class="headerlink" title="2.1 NUMA Node内部"></a>2.1 NUMA Node内部</h3><p>一个NUMA Node内部是由一个<strong>物理CPU</strong>和它所有的<strong>本地内存(Local Memory)</strong>组成的。广义得讲，<br>一个NUMA Node内部还包含<strong>本地IO资源</strong>，对大多数Intel x86 NUMA平台来说，主要是PCIe总线资源。<br>ACPI规范就是这么抽象一个NUMA Node的。</p>
+<h4 id="物理CPU"><a href="#物理CPU" class="headerlink" title="物理CPU"></a>物理CPU</h4><p>一个CPU Socket里可以由多个CPU Core和一个Uncore部分组成。每个CPU Core内部又可以由两个CPU Thread组成。每个CPU thread都是一个操作系统可见的逻辑CPU。对大多数操作系统来说，一个八核HT打开的CPU会被识别为16个CPU。</p>
 <p><img src="/images/NUMA_Hierachy.png" alt="NUMA_Hierachy"></p>
 <ul>
 <li><p>Socket</p>
@@ -151,14 +151,14 @@
 <p>这里特指CPU的多线程技术。在Intel x86架构下，CPU的多线程技术被称作超线程(Hyper-Threading)技术。Intel的超线程技术在一个处理器Core内部引入了额外的硬件设计模拟了两个逻辑处理器(Logical Processor)，每个逻辑处理器都有独立的处理器状态，但共享Core内部的计算资源，如ALU，FPU，L1，L2缓存。这样在最小的硬件投入下提高了CPU在多线程软件工作负载下的性能，提高了硬件使用效率。x86的超线程技术出现早于NUMA架构。</p>
 </li>
 </ul>
-<h3 id="本地内存"><a href="#本地内存" class="headerlink" title="本地内存"></a>本地内存</h3><p>在Intel x86平台上，所谓本地内存，就是CPU可以经过Uncore部件里的iMC访问到的内存。而那些非本地的，远程内存(Remote Memory)，则需要经过QPI的链路到该内存所在的本地CPU的iMC来访问。曾经在Intel IvyBridge的NUMA平台上做的内存访问性能测试显示，远程内存访问的延时时本地内存的一倍。可以假设，操作系统应该尽量利用本地内存的低访问延迟特性来优化应用和系统的性能。</p>
-<h3 id="本地IO资源"><a href="#本地IO资源" class="headerlink" title="本地IO资源"></a>本地IO资源</h3><p>如前所述，Intel自从SandyBridge处理器开始，已经把PCIe Root Complex集成到CPU里了。正因为如此，从CPU直接引出PCIe Root Port的PCIe 3.0的链路可以直接与PCIe Switch或者PCIe Endpoint相连。一个PCIe Endpoint就是一个PCIe外设。这就意味着，对某个PCIe外设来说，如果它直接于哪个CPU相连，它就属于哪个CPU所在的NUMA Node。</p>
+<h4 id="本地内存"><a href="#本地内存" class="headerlink" title="本地内存"></a>本地内存</h4><p>在Intel x86平台上，所谓本地内存，就是CPU可以经过Uncore部件里的iMC访问到的内存。而那些非本地的，远程内存(Remote Memory)，则需要经过QPI的链路到该内存所在的本地CPU的iMC来访问。曾经在Intel IvyBridge的NUMA平台上做的内存访问性能测试显示，远程内存访问的延时时本地内存的一倍。可以假设，操作系统应该尽量利用本地内存的低访问延迟特性来优化应用和系统的性能。</p>
+<h4 id="本地IO资源"><a href="#本地IO资源" class="headerlink" title="本地IO资源"></a>本地IO资源</h4><p>如前所述，Intel自从SandyBridge处理器开始，已经把PCIe Root Complex集成到CPU里了。正因为如此，从CPU直接引出PCIe Root Port的PCIe 3.0的链路可以直接与PCIe Switch或者PCIe Endpoint相连。一个PCIe Endpoint就是一个PCIe外设。这就意味着，对某个PCIe外设来说，如果它直接于哪个CPU相连，它就属于哪个CPU所在的NUMA Node。</p>
 <p>与本地内存一样，所谓本地IO资源，就是CPU可以经过Uncore部件里的PCIe Root Complex直接访问到的IO资源。如果是非本地IO资源，则需要经过QPI链路到该IO资源所属的CPU，再通过该CPU PCIe Root Complex访问。如果同一个NUMA Node内的CPU和内存和另外一个NUMA Node的IO资源发生互操作，因为要跨越QPI链路，会存在额外的访问延迟问题。</p>
 <p>其它体系结构里，为降低外设访问延迟，也有将IB(Infiniband)总线集成到CPU里的。这样IB设备也属于NUMA Node的一部分了。</p>
 <p>可以假设，操作系统如果是NUMA Aware的话，应该会尽量针对本地IO资源低延迟的优点进行优化。</p>
-<h2 id="2-2-NUMA-Node互联"><a href="#2-2-NUMA-Node互联" class="headerlink" title="2.2 NUMA Node互联"></a>2.2 NUMA Node互联</h2><p>在Intel x86上，NUMA Node之间的互联是通过QPI((QuickPath Interconnect) Link的。CPU的Uncore部分有QPI的控制器来控制CPU到QPI的数据访问。</p>
+<h3 id="2-2-NUMA-Node互联"><a href="#2-2-NUMA-Node互联" class="headerlink" title="2.2 NUMA Node互联"></a>2.2 NUMA Node互联</h3><p>在Intel x86上，NUMA Node之间的互联是通过QPI((QuickPath Interconnect) Link的。CPU的Uncore部分有QPI的控制器来控制CPU到QPI的数据访问。</p>
 <p>不借助第三方的Node Controller，2/4/8个NUMA Node(取决于具体架构)可以通过QPI(QuickPath Interconnect)总线互联起来，构成一个NUMA系统。例如，SGI UV计算机系统，它就是借助自家的SGI NUMAlink®互联技术来达到4到256个CPU socket扩展的能力的。这是一个SMP系统，所以支持运行一个Linux操作系统实例去管理系统。</p>
-<h1 id="3-NUMA-Affinity"><a href="#3-NUMA-Affinity" class="headerlink" title="3. NUMA Affinity"></a>3. NUMA Affinity</h1><p>NUMA Affinity(亲和性)是和NUMA Hierarchy(层级结构)直接相关的。对系统软件来说，以下两个概念至关重要:</p>
+<h2 id="3-NUMA-Affinity"><a href="#3-NUMA-Affinity" class="headerlink" title="3. NUMA Affinity"></a>3. NUMA Affinity</h2><p>NUMA Affinity(亲和性)是和NUMA Hierarchy(层级结构)直接相关的。对系统软件来说，以下两个概念至关重要:</p>
 <ol>
 <li><p><strong>CPU NUMA Affinity</strong></p>
 <p>CPU NUMA的亲和性是指从CPU角度看，哪些内存访问更快，有更低的延迟。如前所述，和该CPU直接相连的本地内存是更快的。操作系统如果可以根据任务所在CPU去分配本地内存，就是基于CPU NUMA亲和性的考虑。因此，CPU NUMA亲和性就是要尽量让任务运行在本地的NUMA Node里。</p>
@@ -175,7 +175,7 @@
 </ul>
 </li>
 </ol>
-<h1 id="4-NUMA拓扑信息"><a href="#4-NUMA拓扑信息" class="headerlink" title="4. NUMA拓扑信息"></a>4. NUMA拓扑信息</h1><p>由于NUMA的亲和性对应用的性能非常重要，那么硬件平台就需要给操作系统提供接口机制来感知硬件的NUMA层级结构。在x86平台，ACPI规范提供了以下接口来让操作系统来检测系统的NUMA层级结构。</p>
+<h2 id="4-NUMA拓扑信息"><a href="#4-NUMA拓扑信息" class="headerlink" title="4. NUMA拓扑信息"></a>4. NUMA拓扑信息</h2><p>由于NUMA的亲和性对应用的性能非常重要，那么硬件平台就需要给操作系统提供接口机制来感知硬件的NUMA层级结构。在x86平台，ACPI规范提供了以下接口来让操作系统来检测系统的NUMA层级结构。</p>
 <p>ACPI 5.0a规范的第17章是有关NUMA的章节。ACPI规范里，NUMA Node被第9章定义的Module Device所描述。ACPI规范里用<strong>Proximity Domain</strong>对NUMA Node做了抽象，两者的概念大多时候等同。</p>
 <ul>
 <li><p><strong>SRAT(System Resource Affinity Table)</strong></p>
