@@ -40,14 +40,14 @@
 <meta property="og:site_name" content="Chris&#39; Blog">
 <meta property="og:description" content="1. NUMA简介NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的”距离”并不相同，这里”距离”同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的”距离”以及设备与内存的”距离”也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://bensenq.github.io/2020/03/25/numa-os-part1/images/NUMA.png">
-<meta property="og:image" content="http://bensenq.github.io/2020/03/25/numa-os-part1/images/NUMA_Hierachy.png">
-<meta property="og:image" content="http://bensenq.github.io/2020/03/25/numa-os-part1/images/NUMA_Distance.png">
+<meta property="og:image" content="http://bensenq.github.io/images/NUMA.png">
+<meta property="og:image" content="http://bensenq.github.io/images/NUMA_Hierachy.png">
+<meta property="og:image" content="http://bensenq.github.io/images/NUMA_Distance.png">
 <meta property="article:published_time" content="2020-03-25T07:48:28.000Z">
-<meta property="article:modified_time" content="2020-03-25T08:07:03.716Z">
+<meta property="article:modified_time" content="2020-03-25T08:19:14.574Z">
 <meta property="article:author" content="Chris">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://bensenq.github.io/2020/03/25/numa-os-part1/images/NUMA.png">
+<meta name="twitter:image" content="http://bensenq.github.io/images/NUMA.png">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
@@ -131,12 +131,12 @@
             <div class="post-content">
             <h1 id="1-NUMA简介"><a href="#1-NUMA简介" class="headerlink" title="1. NUMA简介"></a>1. NUMA简介</h1><p>NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的”距离”并不相同，这里”距离”同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的”距离”以及设备与内存的”距离”也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。</p>
 <p>NUMA中使用Node表示一组资源（例如CPUs、Memory、I/O)。在某些系统中一个Node可能只包含某几类资源而不是全部，有些系统中一个Node就包括所以这些种类。Node间的互联有不同的形式，但是一般来说Node之间的延迟会比Node内大，而带宽通常会比Node内低。</p>
-<p><img src="images/NUMA.png" alt="NUMA"></p>
+<p><img src="/images/NUMA.png" alt="NUMA"></p>
 <p>NUMA上的软件聚焦在Locality上，即尽可能地使用离设备（这里CPU也是算设备）近的资源，减少Node间的数据流量交互。对于Node间有高速互联的系统，把对资源（内存和IO）的使用分散到不同的节点上，而不是仅仅使用本地资源，有时反而能够取得更好的系统带宽（原因是能够存储器控制器的利用率更高），但是这种方法并不普适。</p>
 <h1 id="2-NUMA-Hierarchy"><a href="#2-NUMA-Hierarchy" class="headerlink" title="2. NUMA Hierarchy"></a>2. NUMA Hierarchy</h1><p>NUMA Hierarchy就是NUMA的层级结构。一个Intel x86 NUMA系统就是由多个NUMA Node组成。</p>
 <h2 id="2-1-NUMA-Node内部"><a href="#2-1-NUMA-Node内部" class="headerlink" title="2.1 NUMA Node内部"></a>2.1 NUMA Node内部</h2><p>一个NUMA Node内部是由一个<strong>物理CPU</strong>和它所有的<strong>本地内存(Local Memory)</strong>组成的。广义得讲，<br>一个NUMA Node内部还包含<strong>本地IO资源</strong>，对大多数Intel x86 NUMA平台来说，主要是PCIe总线资源。<br>ACPI规范就是这么抽象一个NUMA Node的。</p>
 <h3 id="物理CPU"><a href="#物理CPU" class="headerlink" title="物理CPU"></a>物理CPU</h3><p>一个CPU Socket里可以由多个CPU Core和一个Uncore部分组成。每个CPU Core内部又可以由两个CPU Thread组成。每个CPU thread都是一个操作系统可见的逻辑CPU。对大多数操作系统来说，一个八核HT打开的CPU会被识别为16个CPU。</p>
-<p><img src="images/NUMA_Hierachy.png" alt="NUMA_Hierachy"></p>
+<p><img src="/images/NUMA_Hierachy.png" alt="NUMA_Hierachy"></p>
 <ul>
 <li><p>Socket</p>
 <p>一个Socket对应一个物理CPU。这个词大概是从CPU在主板上的物理连接方式上来的。处理器通过主板的Socket来插到主板上。尤其是有了多核(Multi-core)系统以后，Multi-socket系统被用来指明系统到底存在多少个物理CPU。</p>
@@ -183,7 +183,7 @@
 </li>
 <li><p><strong>SLIT(System Locality Information Table)</strong></p>
 <p>提供CPU和内存之间的位置远近信息。在SRAT表格里，只能告诉给定的CPU和内存是否在一个NUMA Node。对某个CPU来说，不在本NUMA Node里的内存，即远程内存们是否都是一样的访问延迟取决于NUMA的拓扑有多复杂(QPI的跳数)。总之，对于不能简单用<strong>远近</strong>来描述的NUMA系统(QPI存在0，1，2等不同跳数)，需要SLIT表格给出进一步的说明。同样的，这个表格也是静态表格，热插拔需要使用OSPM的_SLI方法。</p>
-<p><img src="images/NUMA_Distance.png" alt="NUMA_Distance"></p>
+<p><img src="/images/NUMA_Distance.png" alt="NUMA_Distance"></p>
 </li>
 <li><p><strong>DSDT(Differentiated System Description Table)</strong></p>
 <p>从Device NUMA角度看，这个表格给出了系统boot时的外设都属于哪个Proximity Domain(NUMA Node)。</p>
