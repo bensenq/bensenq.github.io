@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>RISC-V与OpenRISC &middot; sukihiro</title>
+        <meta name="description" content="riscv与openrisc的不同">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="RISC-V与OpenRISC">
+<meta property="og:description" content="riscv与openrisc的不同">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+<script type="application/javascript">
+var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+var doNotTrack = (dnt == "1" || dnt == "yes");
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'XXX', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                            </h1>
+                        
+                        
+                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                        
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" aria-label="Github" href="https://github.com/XXX" rel="me">
+                                <i class="fa fa-github-alt" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" aria-label="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" aria-label="LinkedIn" href="https://linkedin.com/in/XXX/" rel="me">
+                                <i class="fa fa-linkedin" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@gmail.com">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a href="/about/">About</a>
+    </li>
+
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">RISC-V与OpenRISC</h1>
+    
+        <p class="post-description" itemprop="description">riscv与openrisc的不同</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2018-04-24" itemprop="datePublished">Tue, Apr 24, 2018</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">sukihiro</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 1 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <p>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。</p>
+<h2 id="开源协议">开源协议</h2>
+<p>OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。</p>
+<h2 id="技术层面">技术层面</h2>
+<p>从RISC-V的官方的<a href="https://riscv.org/2014/10/why-not-build-on-openrisc/">这篇Blog</a>来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：</p>
+<ul>
+<li>立即数占了16位编码，浪费了太多的编码空间，导致很难对指令进行扩展。(注：RISCV的立即数最多占12位)</li>
+<li>没有64位版本。尽管2010年已经开始了64位的相关工作，但是到2014年还没有可用的实现和软件栈。</li>
+<li>OpenRISC架构里还有大量的分支延迟间隙（branch delay slot）。</li>
+<li>没有压缩指令支持。</li>
+</ul>
+<p>(完)</p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+        <p class="post-tags">
+            <span>Tagged:</span>
+                <a href="/tags/architecture/">Architecture</a>, 
+                <a href="/tags/openrisc/">OpenRISC</a>, 
+                <a href="/tags/risc-v/">RISC-V</a>
+        </p>
+    <div class="share">
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fsukihiro.cn%2f2018%2f04%2f24%2friscv-vs-openrisc%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" aria-label="Share on Facebook">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://sukihiro.cn/js/scripts.js"></script>
+    </body>
+</html>
+

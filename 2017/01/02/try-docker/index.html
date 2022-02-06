@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Docker初试 &middot; sukihiro</title>
+        <meta name="description" content="Docker值得折腾，通过Docker可以了解系统运行环境隔离的相关知识">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Docker初试">
+<meta property="og:description" content="Docker值得折腾，通过Docker可以了解系统运行环境隔离的相关知识">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://sukihiro.cn/2017/01/02/try-docker/">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+<script type="application/javascript">
+var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+var doNotTrack = (dnt == "1" || dnt == "yes");
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'XXX', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                            </h1>
+                        
+                        
+                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                        
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" aria-label="Github" href="https://github.com/XXX" rel="me">
+                                <i class="fa fa-github-alt" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" aria-label="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" aria-label="LinkedIn" href="https://linkedin.com/in/XXX/" rel="me">
+                                <i class="fa fa-linkedin" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@gmail.com">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a href="/about/">About</a>
+    </li>
+
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Docker初试</h1>
+    
+        <p class="post-description" itemprop="description">Docker值得折腾，通过Docker可以了解系统运行环境隔离的相关知识</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2017-01-02" itemprop="datePublished">Mon, Jan 2, 2017</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">sukihiro</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 3 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <p>要了解一样东西，最简单的入门方法无非是去使用它，跟它交互，一步步填补概念和纠正已有认知。从今天开始踏上Docker之路！</p>
+<h2 id="安装">安装</h2>
+<p>ubuntu 16.04上的安装还是比较方便的，根据<a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/">官方文档</a>，添加APT源，然后直接<code>apt-get install docker-engine</code>就ok了。具体命令如下：</p>
+<pre><code>$ sudo apt-get update
+$ sudo apt-get install apt-transport-https ca-certificates
+$ sudo apt-key adv \
+               --keyserver hkp://ha.pool.sks-keyservers.net:80 \
+               --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+$ echo &quot;deb https://apt.dockerproject.org/repo ubuntu-xenial main&quot; | sudo tee /etc/apt/sources.list.d/docker.list
+$ sudo apt-get update
+$ sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+$ sudo apt-get install docker-engine
+</code></pre><h2 id="小试">小试</h2>
+<h3 id="开启docker服务">开启docker服务</h3>
+<p>docker daemon负责接收docker工具发过来的命令，然后做相应的操作，因此首先要开启它：</p>
+<pre><code>$ sudo service docker start
+</code></pre><h3 id="hello-world">hello world</h3>
+<p>docker提供了一个最基本的hello world镜像，用来验证docker安装是否就绪。利用docker命令运行它：</p>
+<pre><code>$ sudo docker run hello-world
+</code></pre><p>如果正常一切正常，应该有如下输出：</p>
+<pre><code>Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the &quot;hello-world&quot; image from the Docker Hub.
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker Hub account:
+ https://hub.docker.com
+
+For more examples and ideas, visit:
+ https://docs.docker.com/engine/userguide/
+</code></pre><p>可以看到，docker为了运行<code>hello world</code>例程，经过了一下几个步骤：</p>
+<ol>
+<li>Docker客户端（也就是Docker命令）连接Docker Daemon</li>
+<li>Docker Daemon从Docker Hub（也就是Docker应用仓库）中下载<code>hello-world</code>镜像</li>
+<li>Docker Daemon根据<code>hello-world</code>镜像建立一个Container实例，该实例会运行可执行文件并输出上述打印</li>
+<li>Docker Daemon把输出定向给Docker客户端，显示在终端</li>
+</ol>
+<h2 id="深入一点">深入一点</h2>
+<p><code>hello-world</code>生命周期很短，输出消息后就退出了，看不到太多东东。根据上面的提示，我们可以在容器里运行个ubuntu镜像玩玩：</p>
+<pre><code> $ docker run -it ubuntu bash
+</code></pre><p>其中<code>-it</code>是用来生成交互的伪终端与Container交互，<code>ubuntu</code>是镜像名。和<code>hello-world</code>例子不一样，这个例子多了参数<code>bash</code>，这是用来指明要在Docker中运行的进程，因此上面命令的意思是说，给我创建一个ubuntu容器，并运行bash shell。</p>
+<p>如果不加结尾的bash，我们发现效果与<code>bash</code>相同，也就是说缺省情况下ubuntu镜像就会启动一个bash命令行.</p>
+<p>把bash改成我们想要的命令，就可以在容器中运行它。换成<code>ls</code>试试：</p>
+<pre><code> $ docker run -it ubuntu ls
+bin   dev  home  lib64	mnt  proc  run	 srv  tmp  var
+boot  etc  lib	 media	opt  root  sbin  sys  usr
+</code></pre><p>还可以给命令加参数：</p>
+<pre><code>$ sudo docker run -it ubuntu ls -lrt
+total 64
+drwxr-xr-x   8 root root 4096 Sep 13  2015 lib
+drwxr-xr-x   2 root root 4096 Apr 12  2016 home
+drwxr-xr-x   2 root root 4096 Apr 12  2016 boot
+drwxr-xr-x   2 root root 4096 Dec 13 20:23 srv
+drwxr-xr-x   2 root root 4096 Dec 13 20:23 opt
+drwxr-xr-x   2 root root 4096 Dec 13 20:23 mnt
+drwxr-xr-x   2 root root 4096 Dec 13 20:23 media
+drwxr-xr-x   2 root root 4096 Dec 13 20:24 lib64
+drwx------   2 root root 4096 Dec 13 20:24 root
+drwxr-xr-x   2 root root 4096 Dec 13 20:24 bin
+drwxrwxrwt   2 root root 4096 Dec 13 20:24 tmp
+drwxr-xr-x  11 root root 4096 Dec 15 17:45 usr
+drwxr-xr-x   2 root root 4096 Dec 15 17:45 sbin
+drwxr-xr-x  13 root root 4096 Dec 15 17:45 var
+drwxr-xr-x   6 root root 4096 Dec 15 17:45 run
+dr-xr-xr-x  13 root root    0 Dec 28 17:01 sys
+drwxr-xr-x  45 root root 4096 Dec 28 17:35 etc
+dr-xr-xr-x 221 root root    0 Dec 28 17:35 proc
+drwxr-xr-x   5 root root  380 Dec 28 17:35 dev
+</code></pre><p>docker的容器本质上是提供了一个与主机环境隔离的执行环境，普通Linux上的1号进程是特殊的init，而容器环境下的1号进程就是启动容器时指定的应用。譬如，用ps命令试试看：</p>
+<pre><code>$ sudo docker run ubuntu:latest ps
+  PID TTY          TIME CMD
+    1 ?        00:00:00 ps
+</code></pre><p>可以看到，ps命令在容器里的PID就是1。
+当然除了rootfs不同、进程PID编号不同，容器还在进程间通信、用户、文件系统挂载点、主机名称及物理资源（CPU、MEM、网络）等方面进行隔离和限制，后面逐步探索。</p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+        <p class="post-tags">
+            <span>Tagged:</span>
+                <a href="/tags/docker/">Docker</a>, 
+                <a href="/tags/container/">Container</a>
+        </p>
+    <div class="share">
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fsukihiro.cn%2f2017%2f01%2f02%2ftry-docker%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" aria-label="Share on Facebook">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://sukihiro.cn/js/scripts.js"></script>
+    </body>
+</html>
+

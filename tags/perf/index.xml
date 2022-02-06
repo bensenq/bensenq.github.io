@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>perf on Chris&#39; Blog</title>
+    <link>https://sukihiro.cn/tags/perf/</link>
+    <description>Recent content in perf on Chris&#39; Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>chris</copyright>
+    <lastBuildDate>Sun, 05 Feb 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/perf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IRQ Balance</title>
+      <link>https://sukihiro.cn/2017/02/05/irq-balance/</link>
+      <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://sukihiro.cn/2017/02/05/irq-balance/</guid>
+      <description>关于Linux的中断的balance，这篇文章写的很好，可以学习一下。看完后我的理解是这样的:
+ 多核情况下，为了发挥并发优势，希望中断能分发到不同的核上并发处理，但是需要注意，数据在不同CPU的Cache上来回的迁移是很耗性能的，因此Linux的默认行为也是将某一中断绑定到一个核，而不是在多个核上轮播。 但是一般中断处理代码都比较短，Cache的数据量不大，因此如果能自动在多个CPU上轮播中断是有可能提升性能的。但是问题又来了，网卡的收发包过程中有TCP连接状态的缓存，是非常适合Cache进行缓存的，因此在这种情况下轮播中断变得不可取，因为会导致严重的Cache数据颠簸，性能大大下降。 为了解决这个问题，现代的网卡都是采用PCI MSIX中断，也就是单设备多中断，可以为每个硬件收发队列分配一个中断，然后把每个中断绑定到不同的核上，这样基本上就解决了上面的问题，即能多核并发，又能兼顾收发包的局部性缓存带来的性能收益（网卡驱动会根据IP地址的hash放到对应的队列。） 最后一点，服务器设备比较多，有可能发生高速设备的中断数大于CPU核数，那么就会有一个核处理2个以上中断的情况发上，而这个基本上是没办法提前预知的（和CPU架构、核数、设备拓扑等相关），所以只能通过/proc/irq接口来手动调节。有个用户程序叫irqbalance可以自动做中断均衡，而且据说新版本评价不错，我自己没试过，但我认为要想获取最佳性能还得手动设置affinity。  </description>
+    </item>
+    
+  </channel>
+</rss>

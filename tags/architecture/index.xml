@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Architecture on Chris&#39; Blog</title>
+    <link>https://sukihiro.cn/tags/architecture/</link>
+    <description>Recent content in Architecture on Chris&#39; Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>chris</copyright>
+    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/architecture/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>操作系统对NUMA支持情况：OS部分</title>
+      <link>https://sukihiro.cn/2020/03/25/numa-os-part2/</link>
+      <pubDate>Wed, 25 Mar 2020 17:03:40 +0000</pubDate>
+      
+      <guid>https://sukihiro.cn/2020/03/25/numa-os-part2/</guid>
+      <description>NUMA-Aware操作系统对NUMA系统的支持分为两个层面：
+ 操作系统本身完成大多数关于进程、内存、IO位置的决策，向用户程序隐藏NUMA拓扑信息的细节。这样做的好处操作系统可以进行全局的NUMA资源优化，同时用户程序可以透明的使用NUMA硬件资源而无需关心底层亲缘性细节。 操作系统同时提供一组用户接口（NUMA API），以供特殊需求的用户对NUMA内存分配、调度策略进行重载和显式的控制，以实现复杂应用的手动调优。  1. NUMA系统内存分配 Linux的NUMA系统的内存按照Node划分，一个NUMA Node对应一个Memory Node。一个Memory Node下根据不同的用途划分为不同的Zones（如ZONE_DMA、ZONE_NORMAL等）。
+1.1 内存分配策略 NUMA系统下从哪里分配内存是由Memory Policies决定的。内存分配策略可以针对全系统级别的（System Default Policy），也可以针对某一进程（Task/Process Policy），还可以针对进程中的某一段区域（VMA Policy）。如果考虑到动态共享库问题，还包括共享级策略（Shared Policy）。就优先级而言，进程级的策略高于系统默认策略，而内存区域的策略又可以重载进程级的策略。系统的默认Policy是由系统进程级的内存分配策略可以通过fork进行继承。系统提供get/set_mempolicy和mbind系统调用，以供
+内核支持的内存分配策略有三种：
+ MPOL_BIND：绑定策略，只能从特定的一组Nodes上分配内存。 MPOL_PREFERED：即优先从指定的Node上分配，如果不能满足就再从其他Node上分配。如果指定的Node就是执行内存分配的CPU所在的Node，就称之为Local Allocation。 MPOL_INTERLEAVE：交替策略，它指定在指定的几个节点上，以页为单位，交叉分配内存（round-robin）。  系统的默认分配策略是本地分配（即Local Allocation），但是在启动过程中使用交替策略，这样内核的数据结构是分布在所有Node上的，从而避免启动核所在Node负载过重。一旦系统第一个进程（init）开始执行，策略就变成了本地分配。
+1.2 first touch原则 设置内存分配策略并不触发任何实际的分配动作，没有访问过的虚拟空间或者ZERO Page事实上都没有对应实际的物理页面。因此，只有在第一次访问出发缺页时，这些内存分配策略才会其作用，称为First Touch原则。
+一个进程可以设置自己的Memory Policy，但是如果多个进程共用同一物理页（如共享库情况），那么Memory Policy就有可能失效。因为内存页的第一个使用者将决定这个页的分配策略。
+1.3 页面迁移 如果任务频繁使用的页面是在远程Node，就有必要将其迁移到本地Node。Linux提供给用户页面迁移的接口（migrate_pages/move_pages系统调用），其中migrate_pages可以把一个进程的所有页面迁移到制定Node，move_pages则是可以把一组页面迁移。普通权限用户只能迁移那些只被本进程引用的页面。要迁移所有页面需要ROOT权限。
+但是很难保证将任务所有页面都迁移到本地节点，因为有些代码段是被大量的共享使用的，特别是考虑到动态链接库的情况下。
+2. NUMA API 2.1 NUMA工具 numactl是设定进程NUMA策略的命令行工具。对于那些无法修改和重新编译的程序，它可以进行非常有效的策略设定。numactl使管理员可以通过简单的命令行调用来设定进程的策略， 并可以集成到管理脚本中。
+numactl的主要功能包括：
+ 设定进程的内存分配基本策略 限定内存分配范围，如某一特定节点或部分节点集合 对进程进行节点或节点集合的绑定 修改命名共享内存，tmpfs或hugetblfs等的内存策略 获取当前策略信息及状态 获取NUMA硬件拓扑  下面是使用numactl设定进程策略的实例：
+numactl --cpubind=0 --membind=0,1 program 其意义为：在节点0上的CPU运行名为program的程序，并且只在节点0，1上分配内存。Cpubind的参数是节点编号，而不是cpu编号。在每个节点上有多个CPU的系统上，编号的定义顺序可能会不同。
+下面是使用numactl更改共享内存段的分配策略的实例：
+numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为： 对命名共享内存interleaved进行设置，其策略为全节点交织分配，大小为1G。</description>
+    </item>
+    
+    <item>
+      <title>操作系统对NUMA支持情况：NUMA基础</title>
+      <link>https://sukihiro.cn/2020/03/25/numa-os-part1/</link>
+      <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sukihiro.cn/2020/03/25/numa-os-part1/</guid>
+      <description>1. NUMA简介 NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的&amp;quot;距离&amp;quot;并不相同，这里&amp;quot;距离&amp;quot;同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的&amp;quot;距离&amp;quot;以及设备与内存的&amp;quot;距离&amp;quot;也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。
+NUMA中使用Node表示一组资源（例如CPUs、Memory、I/O)。在某些系统中一个Node可能只包含某几类资源而不是全部，有些系统中一个Node就包括所以这些种类。Node间的互联有不同的形式，但是一般来说Node之间的延迟会比Node内大，而带宽通常会比Node内低。
+NUMA上的软件聚焦在Locality上，即尽可能地使用离设备（这里CPU也是算设备）近的资源，减少Node间的数据流量交互。对于Node间有高速互联的系统，把对资源（内存和IO）的使用分散到不同的节点上，而不是仅仅使用本地资源，有时反而能够取得更好的系统带宽（原因是能够存储器控制器的利用率更高），但是这种方法并不普适。
+2. NUMA Hierarchy NUMA Hierarchy就是NUMA的层级结构。一个Intel x86 NUMA系统就是由多个NUMA Node组成。
+2.1 NUMA Node内部 一个NUMA Node内部是由一个物理CPU和它所有的本地内存(Local Memory)组成的。广义得讲， 一个NUMA Node内部还包含本地IO资源，对大多数Intel x86 NUMA平台来说，主要是PCIe总线资源。 ACPI规范就是这么抽象一个NUMA Node的。
+物理CPU 一个CPU Socket里可以由多个CPU Core和一个Uncore部分组成。每个CPU Core内部又可以由两个CPU Thread组成。每个CPU thread都是一个操作系统可见的逻辑CPU。对大多数操作系统来说，一个八核HT打开的CPU会被识别为16个CPU。
+  Socket
+一个Socket对应一个物理CPU。这个词大概是从CPU在主板上的物理连接方式上来的。处理器通过主板的Socket来插到主板上。尤其是有了多核(Multi-core)系统以后，Multi-socket系统被用来指明系统到底存在多少个物理CPU。
+  Core
+CPU的运算核心。 x86的核包含了CPU运算的基本部件，如逻辑运算单元(ALU), 浮点运算单元(FPU), L1和L2缓存。一个Socket里可以有多个Core。如今的多核时代，即使是Single Socket的系统，也是逻辑上的SMP系统。但是，一个物理CPU的系统不存在非本地内存，因此相当于UMA系统。
+  Uncore
+Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里集成了过去x86 UMA架构时代北桥芯片的基本功能。在Nehalem时代，内存控制器被集成到CPU里，叫做iMC(Integrated Memory Controller)。而PCIe Root Complex还做为独立部件在IO Hub芯片里。到了SandyBridge时代，PCIe Root Complex也被集成到了CPU里。现今的Uncore部分，除了iMC，PCIe Root Complex，还有QPI(QuickPath Interconnect)控制器，L3缓存，CBox(负责缓存一致性)，及其它外设控制器。
+  Threads
+这里特指CPU的多线程技术。在Intel x86架构下，CPU的多线程技术被称作超线程(Hyper-Threading)技术。Intel的超线程技术在一个处理器Core内部引入了额外的硬件设计模拟了两个逻辑处理器(Logical Processor)，每个逻辑处理器都有独立的处理器状态，但共享Core内部的计算资源，如ALU，FPU，L1，L2缓存。这样在最小的硬件投入下提高了CPU在多线程软件工作负载下的性能，提高了硬件使用效率。x86的超线程技术出现早于NUMA架构。
+  本地内存 在Intel x86平台上，所谓本地内存，就是CPU可以经过Uncore部件里的iMC访问到的内存。而那些非本地的，远程内存(Remote Memory)，则需要经过QPI的链路到该内存所在的本地CPU的iMC来访问。曾经在Intel IvyBridge的NUMA平台上做的内存访问性能测试显示，远程内存访问的延时时本地内存的一倍。可以假设，操作系统应该尽量利用本地内存的低访问延迟特性来优化应用和系统的性能。</description>
+    </item>
+    
+    <item>
+      <title>RISC-V与OpenRISC</title>
+      <link>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
+      <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
+      <description>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。
+开源协议 OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。
+技术层面 从RISC-V的官方的这篇Blog来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：
+ 立即数占了16位编码，浪费了太多的编码空间，导致很难对指令进行扩展。(注：RISCV的立即数最多占12位) 没有64位版本。尽管2010年已经开始了64位的相关工作，但是到2014年还没有可用的实现和软件栈。 OpenRISC架构里还有大量的分支延迟间隙（branch delay slot）。 没有压缩指令支持。  (完)</description>
+    </item>
+    
+  </channel>
+</rss>

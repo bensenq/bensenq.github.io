@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Linux驱动模型Probe解惑 &middot; sukihiro</title>
+        <meta name="description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="robots" content="index,follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:title" content="Linux驱动模型Probe解惑">
+<meta property="og:description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://sukihiro.cn/2017/10/31/linux-driver-model/">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        
+        
+        
+        
+
+    </head>
+    <body>
+        
+<script type="application/javascript">
+var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+var doNotTrack = (dnt == "1" || dnt == "yes");
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'XXX', 'auto');
+	ga('set', 'anonymizeIp', true);
+	ga('send', 'pageview');
+}
+</script>
+
+
+        <div id="wrapper">
+            <header class="site-header">
+                <div class="container">
+                    <div class="site-title-wrapper">
+                        
+                            <h1 class="site-title">
+                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                            </h1>
+                        
+                        
+                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                        
+                        
+                        
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Github" aria-label="Github" href="https://github.com/XXX" rel="me">
+                                <i class="fa fa-github-alt" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Stack Overflow" aria-label="Stack Overflow" href="https://stackoverflow.com/users/XXX/YYY" rel="me">
+                                <i class="fa fa-stack-overflow" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="LinkedIn" aria-label="LinkedIn" href="https://linkedin.com/in/XXX/" rel="me">
+                                <i class="fa fa-linkedin" aria-hidden="true"></i>
+                            </a>
+                        
+                        
+                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@gmail.com">
+                                <i class="fa fa-envelope" aria-hidden="true"></i>
+                            </a>
+                        
+                    </div>
+
+                    <ul class="site-nav">
+                        
+    <li class="site-nav-item">
+        <a href="/">Blog</a>
+    </li>
+
+    <li class="site-nav-item">
+        <a href="/about/">About</a>
+    </li>
+
+
+                    </ul>
+                </div>
+            </header>
+
+            <div id="container">
+
+
+<div class="container">
+    <article class="post-container" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Linux驱动模型Probe解惑</h1>
+    
+        <p class="post-description" itemprop="description">如果系统有多个driver都可以匹配到一个device，系统会怎么处理?</p>
+    
+    <p class="post-date">
+        <span>Published <time datetime="2017-10-31" itemprop="datePublished">Tue, Oct 31, 2017</time></span>
+        <span>by</span>
+        <span itemscope="" itemprop="author" itemtype="https://schema.org/Person">
+            <span itemprop="name">
+                <a href="#" itemprop="url" rel="author">sukihiro</a>
+            </span>
+        </span>
+    </p>
+    
+        <p class="post-reading post-line">
+            <span>Estimated reading time: 3 min</span>
+        </p>
+    
+</header>
+
+        <div class="post-content clearfix" itemprop="articleBody">
+    
+
+    <h2 id="问题">问题</h2>
+<p>首先来回顾下，Linux设备驱动模型中bus、device和driver三者的关系：</p>
+<ul>
+<li>bus是物理总线的抽象。</li>
+<li>device是设备抽象，存在于bus之上。</li>
+<li>driver是驱动抽象，注册到bus上，用于驱动bus上的特定device。</li>
+<li>device和driver通过bus提供的match方法来匹配（通常是使用设备ID进行匹配）。</li>
+<li>driver匹配到device后，调用driver的probe接口驱动device。</li>
+<li>一个driver可以驱动多个相同的设备或者不同的设备。</li>
+</ul>
+<p>一个driver匹配并驱动多个device的情形比较常见，比如一个igb驱动可以驱动多块intel网卡（可以是相同型号，也可以是不同型号），这是由驱动的id_table和驱动的处理逻辑决定的。那么自然而然的一个问题是：如果系统有多个driver都可以匹配到一个device，系统会怎么处理？换句话说，Linux是否允许两个driver服务同一个device？</p>
+<h2 id="实验">实验</h2>
+<p>带着这样的疑问，我做了下面这个实验。</p>
+<p>首先，查看下系统的PCI设备驱动情况，挑选一个测试对象。</p>
+<pre><code>$ lspci 
+00:00.0 Host bridge: Intel Corporation Skylake Host Bridge/DRAM Registers (rev 08)
+00:02.0 VGA compatible controller: Intel Corporation HD Graphics 520 (rev 07)
+00:14.0 USB controller: Intel Corporation Sunrise Point-LP USB 3.0 xHCI Controller (rev 21)
+00:14.2 Signal processing controller: Intel Corporation Sunrise Point-LP Thermal subsystem (rev 21)
+00:16.0 Communication controller: Intel Corporation Sunrise Point-LP CSME HECI #1 (rev 21)
+00:17.0 SATA controller: Intel Corporation Sunrise Point-LP SATA Controller [AHCI mode] (rev 21)
+00:1c.0 PCI bridge: Intel Corporation Sunrise Point-LP PCI Express Root Port (rev f1)
+00:1c.2 PCI bridge: Intel Corporation Sunrise Point-LP PCI Express Root Port (rev f1)
+00:1f.0 ISA bridge: Intel Corporation Sunrise Point-LP LPC Controller (rev 21)
+00:1f.2 Memory controller: Intel Corporation Sunrise Point-LP PMC (rev 21)
+00:1f.3 Audio device: Intel Corporation Sunrise Point-LP HD Audio (rev 21)
+00:1f.4 SMBus: Intel Corporation Sunrise Point-LP SMBus (rev 21)
+00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection I219-V (rev 21)
+02:00.0 Unassigned class [ff00]: Realtek Semiconductor Co., Ltd. RTS522A PCI Express Card Reader (rev 01)
+04:00.0 Network controller: Intel Corporation Wireless 8260 (rev 3a)
+</code></pre><p>可以看到<code>00:1f.6</code>设备是一块Intel网卡，我们就拿它试验。看看它的驱动情况：</p>
+<pre><code>$ lspci -v
+00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection I219-V (rev 21)
+        Subsystem: Lenovo Ethernet Connection I219-V
+        Flags: bus master, fast devsel, latency 0, IRQ 128
+        Memory at f1200000 (32-bit, non-prefetchable) [size=128K]
+        Capabilities: &lt;access denied&gt;
+        Kernel driver in use: e1000e
+        Kernel modules: e1000e
+</code></pre><p>可以看到当前正在使用的驱动是<code>e1000e</code>模块。</p>
+<p>然后，构造一个可以匹配选中网卡的PCI设备驱动，观察驱动加载时系统的行为。</p>
+<p>代码直接从ldd3的pci_skel样例修改，只需要把id_table修改成目标网卡的vendor id和device id即可。</p>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/pci.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;linux/init.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="n">ids</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="p">{</span> <span class="n">PCI_DEVICE</span><span class="p">(</span><span class="mh">0x8086</span><span class="p">,</span> <span class="mh">0x1570</span><span class="p">),</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="p">}</span>
+<span class="p">};</span>
+<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pci</span><span class="p">,</span> <span class="n">ids</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="nf">skel_get_revision</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">u8</span> <span class="n">revision</span><span class="p">;</span>
+
+	<span class="n">pci_read_config_byte</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">PCI_REVISION_ID</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">revision</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">revision</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="o">*</span><span class="n">id</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="cm">/* Do probing type stuff here.  
+</span><span class="cm">	 * Like calling request_region();
+</span><span class="cm">	 */</span>
+	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;pci_e1000e probing</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+	<span class="n">pci_enable_device</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+	
+	<span class="k">if</span> <span class="p">(</span><span class="n">skel_get_revision</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x42</span><span class="p">)</span>
+		<span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
+
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="cm">/* clean up any allocated resources and stuff here.
+</span><span class="cm">	 * like call release_region();
+</span><span class="cm">	 */</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">pci_driver</span> <span class="n">pci_driver</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;pci_e1000e&#34;</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">id_table</span> <span class="o">=</span> <span class="n">ids</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">probe</span><span class="p">,</span>
+	<span class="p">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">remove</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">pci_skel_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;%s:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">pci_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">pci_skel_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">pci_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">&#34;GPL&#34;</span><span class="p">);</span>
+
+<span class="n">module_init</span><span class="p">(</span><span class="n">pci_skel_init</span><span class="p">);</span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">pci_skel_exit</span><span class="p">);</span>
+</code></pre></div><p>Makefile如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-makefile" data-lang="makefile"><span class="nv">obj-m</span>   <span class="o">:=</span> pci_e1000e.o
+
+<span class="nv">KERNELDIR</span> <span class="o">?=</span> /lib/modules/<span class="k">$(</span>shell uname -r<span class="k">)</span>/build
+<span class="nv">PWD</span>       <span class="o">:=</span> <span class="k">$(</span>shell <span class="nb">pwd</span><span class="k">)</span>
+
+<span class="nf">all</span><span class="o">:</span>
+        <span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>KERNELDIR<span class="k">)</span> <span class="nv">M</span><span class="o">=</span><span class="k">$(</span>PWD<span class="k">)</span>
+
+<span class="nf">clean</span><span class="o">:</span>
+        rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+</code></pre></div><p>我在init和probe接口中增加了打印，跟踪流程。</p>
+<p>直接make生成pci_e1000e.ko模块，加载测试。</p>
+<pre><code>$ make
+$ sudo insmod pci_e1000e.ko
+</code></pre><p>dmesg查看驱动加载情况，发现内核只新增了一行打印：</p>
+<pre><code>pci_skel_init:52
+</code></pre><p>说明驱动成功加载，但是压根没有进入probe接口。由此看来，内核应该不会让一个device同时被两个driver匹配上。</p>
+<h2 id="分析">分析</h2>
+<p>直接从源码分析，可以看到设备驱动加载后，<code>pci_register_driver</code>调用流程大致如下：</p>
+<p><img src="/images/driver_attatch.svg" alt=""></p>
+<p>其核心代码是<code>driver_attatch</code>，其作用是driver binding，它调用<code>bus_for_each_dev</code>来遍历总线上的所有设备，然后对每一个设备调用<code>__driver_attach</code>函数。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">bus_for_each_dev</span><span class="p">(</span><span class="n">drv</span><span class="o">-&gt;</span><span class="n">bus</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">drv</span><span class="p">,</span> <span class="n">__driver_attach</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><p>我们想要的答案就在<code>__driver_attach</code>函数的实现里：</p>
+<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="k">static</span> <span class="kt">int</span> <span class="nf">__driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">driver_match_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="cm">/* no match */</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="n">EPROBE_DEFER</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Device match requests probe deferral</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">driver_deferred_probe_add</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Bus failed to match device: %d&#34;</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+                    <span class="p">}</span> <span class="cm">/* ret &gt; 0 means positive match */</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>        <span class="cm">/* Needed for USB */</span>
+                <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
+        <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">)</span>
+                <span class="n">driver_probe_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
+        <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>可以看到，在<code>driver_match_device</code>匹配成功以后，并不是直接进行probe的，而是先要判断<code>dev-&gt;driver</code>是否为空，如果不为空就不进行<code>driver_probe_device</code>了。也就是说，如果一个device已经绑定了一个driver，就不允许尝试绑定第二个driver了。</p>
+
+</div>
+
+        <footer class="post-footer clearfix">
+        <p class="post-tags">
+            <span>Tagged:</span>
+                <a href="/tags/device-driver/">Device Driver</a>
+        </p>
+    <div class="share">
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fsukihiro.cn%2f2017%2f10%2f31%2flinux-driver-model%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" aria-label="Share on Facebook">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
+    </div>
+</footer>
+
+        
+    <div class="comments">
+        
+    </div>
+
+    </article>
+</div>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="site-title-wrapper">
+                    <h1 class="site-title">
+                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                    </h1>
+                    <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
+                        <i class="fa fa-angle-up" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="footer-copyright">
+                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                </p>
+                <p class="footer-copyright">
+                    <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
+                    <span>/ <a href="https://github.com/jbub/ghostwriter">Ported</a> to Hugo By <a href="https://github.com/jbub">jbub</a></span>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://sukihiro.cn/js/scripts.js"></script>
+    </body>
+</html>
+

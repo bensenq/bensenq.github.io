@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Server on Chris&#39; Blog</title>
+    <link>https://sukihiro.cn/tags/server/</link>
+    <description>Recent content in Server on Chris&#39; Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>chris</copyright>
+    <lastBuildDate>Thu, 23 Nov 2017 01:40:05 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/server/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IPMI小记</title>
+      <link>https://sukihiro.cn/2017/11/23/ipmi-note/</link>
+      <pubDate>Thu, 23 Nov 2017 01:40:05 +0000</pubDate>
+      
+      <guid>https://sukihiro.cn/2017/11/23/ipmi-note/</guid>
+      <description>IPMI简介 智能平台管理接口（Intelligent Platform Management Interface）是一个开放的标准，定义了扩平台、跨操作系统监控服务器运行的接口。IPMI卡独立于服务器板主机系统，因此服务器的运行情况不影响监控功能，例如服务器宕机后，可以利用IPMI远程收集信息和重启。在计算机领域这种管理方式通常叫做带外管理**（**Out-of-band management），特指使用独立管理通道进行设备维护。它允许系统管理员远程监控和管理服务器和其他网络设备，无论这些设备是否处于开机状态。
+IPMI只定义架构和接口格式，详细实现各厂商没有统一标准。
+IPMI结构 IPMI的主控叫BMC（baseboard management controller），其他管理控制器叫做卫星控制器（satellite controllers）。BMC是定制的嵌入式控制器，运行管理系统软件；管理控制器与平台的硬件连接，获取温度、电源、风扇转速、操作系统状态等信心。BMC与周边控制器通过IPMB总线连接，IPMB是I2C的增强实现。BMC也可以通过IPMC总线或桥与其他的BMC及其附属控制器连接。
+Side-band vs. out-of-band IPMI卡在实现上分两种，一种是BMC提供独立的NIC端口，对外提供远程服务，叫做out-of-band方式；另一种方式是BMC通过SMBus连接主机系统的NIC-Phy端口（如上图），与Host OS共享LAN接口，称作Side-band方式。Side-band的优点是可以节省成本较少线缆连接，缺点是带宽受限（因为是SMBus），一般只能支持文本控制台。另外，在Side-band方式下，一旦主机的LAN端口发生硬件故障，IPMI就没办法通过网络对外提供管理服务了。
+关于Side-band的实现细节，即BMC和Host OS共享端口的技术细节，可以参考这篇文章和这个问答。其核心是NIC端口的多MAC支持功能，可以把端口的这种实现方式理解成一个网络交换机：将一个物理端口和两个虚拟端口桥接。问答里还列出了Side-band方式的更多缺陷，主要是BMC和HOST没有办法保证真正的隔离。</description>
+    </item>
+    
+  </channel>
+</rss>
