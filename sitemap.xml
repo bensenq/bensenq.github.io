@@ -3,137 +3,137 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://sukihiro.cn/about/</loc>
+    <loc>https://www.sukihiro.cn/about/</loc>
     <lastmod>2021-01-23T21:49:27+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/architecture/</loc>
+    <loc>https://www.sukihiro.cn/tags/architecture/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/</loc>
+    <loc>https://www.sukihiro.cn/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/os/</loc>
+    <loc>https://www.sukihiro.cn/tags/os/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/post/</loc>
+    <loc>https://www.sukihiro.cn/post/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/</loc>
+    <loc>https://www.sukihiro.cn/tags/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2020/03/25/numa-os-part2/</loc>
+    <loc>https://www.sukihiro.cn/2020/03/25/numa-os-part2/</loc>
     <lastmod>2020-03-25T17:03:40+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2020/03/25/numa-os-part1/</loc>
+    <loc>https://www.sukihiro.cn/2020/03/25/numa-os-part1/</loc>
     <lastmod>2020-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/openrisc/</loc>
+    <loc>https://www.sukihiro.cn/tags/openrisc/</loc>
     <lastmod>2018-04-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/risc-v/</loc>
+    <loc>https://www.sukihiro.cn/tags/risc-v/</loc>
     <lastmod>2018-04-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</loc>
+    <loc>https://www.sukihiro.cn/2018/04/24/riscv-vs-openrisc/</loc>
     <lastmod>2018-04-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/ipmi/</loc>
+    <loc>https://www.sukihiro.cn/tags/ipmi/</loc>
     <lastmod>2017-11-23T01:40:05+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2017/11/23/ipmi-note/</loc>
+    <loc>https://www.sukihiro.cn/2017/11/23/ipmi-note/</loc>
     <lastmod>2017-11-23T01:40:05+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/server/</loc>
+    <loc>https://www.sukihiro.cn/tags/server/</loc>
     <lastmod>2017-11-23T01:40:05+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/device-driver/</loc>
+    <loc>https://www.sukihiro.cn/tags/device-driver/</loc>
     <lastmod>2017-10-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2017/10/31/linux-driver-model/</loc>
+    <loc>https://www.sukihiro.cn/2017/10/31/linux-driver-model/</loc>
     <lastmod>2017-10-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/irq/</loc>
+    <loc>https://www.sukihiro.cn/tags/irq/</loc>
     <lastmod>2017-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2017/02/05/irq-balance/</loc>
+    <loc>https://www.sukihiro.cn/2017/02/05/irq-balance/</loc>
     <lastmod>2017-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/perf/</loc>
+    <loc>https://www.sukihiro.cn/tags/perf/</loc>
     <lastmod>2017-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/container/</loc>
+    <loc>https://www.sukihiro.cn/tags/container/</loc>
     <lastmod>2017-01-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/docker/</loc>
+    <loc>https://www.sukihiro.cn/tags/docker/</loc>
     <lastmod>2017-01-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2017/01/02/try-docker/</loc>
+    <loc>https://www.sukihiro.cn/2017/01/02/try-docker/</loc>
     <lastmod>2017-01-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/kernel/</loc>
+    <loc>https://www.sukihiro.cn/tags/kernel/</loc>
     <lastmod>2016-08-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2016/08/27/raw_readl/</loc>
+    <loc>https://www.sukihiro.cn/2016/08/27/raw_readl/</loc>
     <lastmod>2016-08-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/c/</loc>
+    <loc>https://www.sukihiro.cn/tags/c/</loc>
     <lastmod>2016-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/tags/gnu/</loc>
+    <loc>https://www.sukihiro.cn/tags/gnu/</loc>
     <lastmod>2016-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://sukihiro.cn/2016/03/03/ternary-op-extension/</loc>
+    <loc>https://www.sukihiro.cn/2016/03/03/ternary-op-extension/</loc>
     <lastmod>2016-03-03T00:00:00+00:00</lastmod>
   </url>
   

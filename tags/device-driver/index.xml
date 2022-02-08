@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Device Driver on Chris&#39; Blog</title>
-    <link>https://sukihiro.cn/tags/device-driver/</link>
+    <link>https://www.sukihiro.cn/tags/device-driver/</link>
     <description>Recent content in Device Driver on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Tue, 31 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/device-driver/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 31 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sukihiro.cn/tags/device-driver/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Linux驱动模型Probe解惑</title>
-      <link>https://sukihiro.cn/2017/10/31/linux-driver-model/</link>
+      <link>https://www.sukihiro.cn/2017/10/31/linux-driver-model/</link>
       <pubDate>Tue, 31 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://sukihiro.cn/2017/10/31/linux-driver-model/</guid>
+      <guid>https://www.sukihiro.cn/2017/10/31/linux-driver-model/</guid>
       <description>问题 首先来回顾下，Linux设备驱动模型中bus、device和driver三者的关系：
  bus是物理总线的抽象。 device是设备抽象，存在于bus之上。 driver是驱动抽象，注册到bus上，用于驱动bus上的特定device。 device和driver通过bus提供的match方法来匹配（通常是使用设备ID进行匹配）。 driver匹配到device后，调用driver的probe接口驱动device。 一个driver可以驱动多个相同的设备或者不同的设备。  一个driver匹配并驱动多个device的情形比较常见，比如一个igb驱动可以驱动多块intel网卡（可以是相同型号，也可以是不同型号），这是由驱动的id_table和驱动的处理逻辑决定的。那么自然而然的一个问题是：如果系统有多个driver都可以匹配到一个device，系统会怎么处理？换句话说，Linux是否允许两个driver服务同一个device？
 实验 带着这样的疑问，我做了下面这个实验。

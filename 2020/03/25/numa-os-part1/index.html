@@ -41,9 +41,9 @@ Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里�
 这里特指CPU的多线程技术。在Intel x86架构下，CPU的多线程技术被称作超线程(Hyper-Threading)技术。Intel的超线程技术在一个处理器Core内部引入了额外的硬件设计模拟了两个逻辑处理器(Logical Processor)，每个逻辑处理器都有独立的处理器状态，但共享Core内部的计算资源，如ALU，FPU，L1，L2缓存。这样在最小的硬件投入下提高了CPU在多线程软件工作负载下的性能，提高了硬件使用效率。x86的超线程技术出现早于NUMA架构。
   本地内存 在Intel x86平台上，所谓本地内存，就是CPU可以经过Uncore部件里的iMC访问到的内存。而那些非本地的，远程内存(Remote Memory)，则需要经过QPI的链路到该内存所在的本地CPU的iMC来访问。曾经在Intel IvyBridge的NUMA平台上做的内存访问性能测试显示，远程内存访问的延时时本地内存的一倍。可以假设，操作系统应该尽量利用本地内存的低访问延迟特性来优化应用和系统的性能。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://sukihiro.cn/2020/03/25/numa-os-part1/">
-        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
-        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
+<meta property="og:url" content="https://www.sukihiro.cn/2020/03/25/numa-os-part1/">
+        <link rel="stylesheet" href="https://www.sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://www.sukihiro.cn/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -62,11 +62,11 @@ Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里�
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                                <a href="https://www.sukihiro.cn/">Chris&#39; Blog</a>
                             </h1>
                         
                         
-                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                            <a class="button-square" href="https://www.sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
                         
                         
                         
@@ -239,7 +239,7 @@ ACPI规范就是这么抽象一个NUMA Node的。</p>
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
+                        <a href="https://www.sukihiro.cn/">Chris&#39; Blog</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -256,9 +256,9 @@ ACPI规范就是这么抽象一个NUMA Node的。</p>
             </div>
         </footer>
 
-        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
-        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
-        <script src="https://sukihiro.cn/js/scripts.js"></script>
+        <script src="https://www.sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://www.sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://www.sukihiro.cn/js/scripts.js"></script>
     </body>
 </html>
 

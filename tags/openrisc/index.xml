@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>OpenRISC on Chris&#39; Blog</title>
-    <link>https://sukihiro.cn/tags/openrisc/</link>
+    <link>https://www.sukihiro.cn/tags/openrisc/</link>
     <description>Recent content in OpenRISC on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Tue, 24 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/openrisc/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 24 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sukihiro.cn/tags/openrisc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>RISC-V与OpenRISC</title>
-      <link>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
+      <link>https://www.sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
       <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
+      <guid>https://www.sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
       <description>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。
 开源协议 OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。
 技术层面 从RISC-V的官方的这篇Blog来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Kernel on Chris&#39; Blog</title>
-    <link>https://sukihiro.cn/tags/kernel/</link>
+    <link>https://www.sukihiro.cn/tags/kernel/</link>
     <description>Recent content in Kernel on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Sat, 27 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/kernel/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://www.sukihiro.cn/tags/kernel/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>readl和raw_readl语义区别</title>
-      <link>https://sukihiro.cn/2016/08/27/raw_readl/</link>
+      <link>https://www.sukihiro.cn/2016/08/27/raw_readl/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://sukihiro.cn/2016/08/27/raw_readl/</guid>
+      <guid>https://www.sukihiro.cn/2016/08/27/raw_readl/</guid>
       <description>进行Linux驱动方面开发的程序员，经常需要使用readl/writel系列函数对Memory-Mapped IO进行读写。那么readl/__readl/raw_readl/__raw_readl几个函数的具体语义有何差别呢？
 内核中关于这几个函数的说明非常有限，根据stackoverflow上的这个问答，我们可以总结为：
   raw前缀只与byteorder相关，即readl/writel是linux默认的小端操作，而raw_readl/raw_writel是native访问。也就是说：如果是小端系统，raw_readl与readl相同，如果是大端系统，raw_readl与readl的有字节序差别。
