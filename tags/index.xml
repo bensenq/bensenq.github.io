@@ -2,135 +2,135 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Chris&#39; Blog</title>
-    <link>https://www.sukihiro.cn/tags/</link>
+    <link>http://sukihiro.cn/tags/</link>
     <description>Recent content in Tags on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="https://www.sukihiro.cn/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="http://sukihiro.cn/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Architecture</title>
-      <link>https://www.sukihiro.cn/tags/architecture/</link>
+      <link>http://sukihiro.cn/tags/architecture/</link>
       <pubDate>Wed, 25 Mar 2020 17:03:40 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/architecture/</guid>
+      <guid>http://sukihiro.cn/tags/architecture/</guid>
       <description></description>
     </item>
     
     <item>
       <title>OS</title>
-      <link>https://www.sukihiro.cn/tags/os/</link>
+      <link>http://sukihiro.cn/tags/os/</link>
       <pubDate>Wed, 25 Mar 2020 17:03:40 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/os/</guid>
+      <guid>http://sukihiro.cn/tags/os/</guid>
       <description></description>
     </item>
     
     <item>
       <title>OpenRISC</title>
-      <link>https://www.sukihiro.cn/tags/openrisc/</link>
+      <link>http://sukihiro.cn/tags/openrisc/</link>
       <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/openrisc/</guid>
+      <guid>http://sukihiro.cn/tags/openrisc/</guid>
       <description></description>
     </item>
     
     <item>
       <title>RISC-V</title>
-      <link>https://www.sukihiro.cn/tags/risc-v/</link>
+      <link>http://sukihiro.cn/tags/risc-v/</link>
       <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/risc-v/</guid>
+      <guid>http://sukihiro.cn/tags/risc-v/</guid>
       <description></description>
     </item>
     
     <item>
       <title>IPMI</title>
-      <link>https://www.sukihiro.cn/tags/ipmi/</link>
+      <link>http://sukihiro.cn/tags/ipmi/</link>
       <pubDate>Thu, 23 Nov 2017 01:40:05 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/ipmi/</guid>
+      <guid>http://sukihiro.cn/tags/ipmi/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Server</title>
-      <link>https://www.sukihiro.cn/tags/server/</link>
+      <link>http://sukihiro.cn/tags/server/</link>
       <pubDate>Thu, 23 Nov 2017 01:40:05 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/server/</guid>
+      <guid>http://sukihiro.cn/tags/server/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Device Driver</title>
-      <link>https://www.sukihiro.cn/tags/device-driver/</link>
+      <link>http://sukihiro.cn/tags/device-driver/</link>
       <pubDate>Tue, 31 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/device-driver/</guid>
+      <guid>http://sukihiro.cn/tags/device-driver/</guid>
       <description></description>
     </item>
     
     <item>
       <title>IRQ</title>
-      <link>https://www.sukihiro.cn/tags/irq/</link>
+      <link>http://sukihiro.cn/tags/irq/</link>
       <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/irq/</guid>
+      <guid>http://sukihiro.cn/tags/irq/</guid>
       <description></description>
     </item>
     
     <item>
       <title>perf</title>
-      <link>https://www.sukihiro.cn/tags/perf/</link>
+      <link>http://sukihiro.cn/tags/perf/</link>
       <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/perf/</guid>
+      <guid>http://sukihiro.cn/tags/perf/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Container</title>
-      <link>https://www.sukihiro.cn/tags/container/</link>
+      <link>http://sukihiro.cn/tags/container/</link>
       <pubDate>Mon, 02 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/container/</guid>
+      <guid>http://sukihiro.cn/tags/container/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Docker</title>
-      <link>https://www.sukihiro.cn/tags/docker/</link>
+      <link>http://sukihiro.cn/tags/docker/</link>
       <pubDate>Mon, 02 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/docker/</guid>
+      <guid>http://sukihiro.cn/tags/docker/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Kernel</title>
-      <link>https://www.sukihiro.cn/tags/kernel/</link>
+      <link>http://sukihiro.cn/tags/kernel/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/kernel/</guid>
+      <guid>http://sukihiro.cn/tags/kernel/</guid>
       <description></description>
     </item>
     
     <item>
       <title>C</title>
-      <link>https://www.sukihiro.cn/tags/c/</link>
+      <link>http://sukihiro.cn/tags/c/</link>
       <pubDate>Thu, 03 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/c/</guid>
+      <guid>http://sukihiro.cn/tags/c/</guid>
       <description></description>
     </item>
     
     <item>
       <title>GNU</title>
-      <link>https://www.sukihiro.cn/tags/gnu/</link>
+      <link>http://sukihiro.cn/tags/gnu/</link>
       <pubDate>Thu, 03 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/tags/gnu/</guid>
+      <guid>http://sukihiro.cn/tags/gnu/</guid>
       <description></description>
     </item>
     

@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Chris&#39; Blog</title>
-    <link>https://www.sukihiro.cn/post/</link>
+    <link>http://sukihiro.cn/post/</link>
     <description>Recent content in Posts on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="https://www.sukihiro.cn/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="http://sukihiro.cn/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>操作系统对NUMA支持情况：OS部分</title>
-      <link>https://www.sukihiro.cn/2020/03/25/numa-os-part2/</link>
+      <link>http://sukihiro.cn/2020/03/25/numa-os-part2/</link>
       <pubDate>Wed, 25 Mar 2020 17:03:40 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2020/03/25/numa-os-part2/</guid>
+      <guid>http://sukihiro.cn/2020/03/25/numa-os-part2/</guid>
       <description>NUMA-Aware操作系统对NUMA系统的支持分为两个层面：
  操作系统本身完成大多数关于进程、内存、IO位置的决策，向用户程序隐藏NUMA拓扑信息的细节。这样做的好处操作系统可以进行全局的NUMA资源优化，同时用户程序可以透明的使用NUMA硬件资源而无需关心底层亲缘性细节。 操作系统同时提供一组用户接口（NUMA API），以供特殊需求的用户对NUMA内存分配、调度策略进行重载和显式的控制，以实现复杂应用的手动调优。  1. NUMA系统内存分配 Linux的NUMA系统的内存按照Node划分，一个NUMA Node对应一个Memory Node。一个Memory Node下根据不同的用途划分为不同的Zones（如ZONE_DMA、ZONE_NORMAL等）。
 1.1 内存分配策略 NUMA系统下从哪里分配内存是由Memory Policies决定的。内存分配策略可以针对全系统级别的（System Default Policy），也可以针对某一进程（Task/Process Policy），还可以针对进程中的某一段区域（VMA Policy）。如果考虑到动态共享库问题，还包括共享级策略（Shared Policy）。就优先级而言，进程级的策略高于系统默认策略，而内存区域的策略又可以重载进程级的策略。系统的默认Policy是由系统进程级的内存分配策略可以通过fork进行继承。系统提供get/set_mempolicy和mbind系统调用，以供
@@ -33,10 +33,10 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
     
     <item>
       <title>操作系统对NUMA支持情况：NUMA基础</title>
-      <link>https://www.sukihiro.cn/2020/03/25/numa-os-part1/</link>
+      <link>http://sukihiro.cn/2020/03/25/numa-os-part1/</link>
       <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2020/03/25/numa-os-part1/</guid>
+      <guid>http://sukihiro.cn/2020/03/25/numa-os-part1/</guid>
       <description>1. NUMA简介 NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的&amp;quot;距离&amp;quot;并不相同，这里&amp;quot;距离&amp;quot;同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的&amp;quot;距离&amp;quot;以及设备与内存的&amp;quot;距离&amp;quot;也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。
 NUMA中使用Node表示一组资源（例如CPUs、Memory、I/O)。在某些系统中一个Node可能只包含某几类资源而不是全部，有些系统中一个Node就包括所以这些种类。Node间的互联有不同的形式，但是一般来说Node之间的延迟会比Node内大，而带宽通常会比Node内低。
 NUMA上的软件聚焦在Locality上，即尽可能地使用离设备（这里CPU也是算设备）近的资源，减少Node间的数据流量交互。对于Node间有高速互联的系统，把对资源（内存和IO）的使用分散到不同的节点上，而不是仅仅使用本地资源，有时反而能够取得更好的系统带宽（原因是能够存储器控制器的利用率更高），但是这种方法并不普适。
@@ -56,10 +56,10 @@ Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里�
     
     <item>
       <title>RISC-V与OpenRISC</title>
-      <link>https://www.sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
+      <link>http://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
       <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
+      <guid>http://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
       <description>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。
 开源协议 OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。
 技术层面 从RISC-V的官方的这篇Blog来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：
@@ -68,10 +68,10 @@ Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里�
     
     <item>
       <title>IPMI小记</title>
-      <link>https://www.sukihiro.cn/2017/11/23/ipmi-note/</link>
+      <link>http://sukihiro.cn/2017/11/23/ipmi-note/</link>
       <pubDate>Thu, 23 Nov 2017 01:40:05 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2017/11/23/ipmi-note/</guid>
+      <guid>http://sukihiro.cn/2017/11/23/ipmi-note/</guid>
       <description>IPMI简介 智能平台管理接口（Intelligent Platform Management Interface）是一个开放的标准，定义了扩平台、跨操作系统监控服务器运行的接口。IPMI卡独立于服务器板主机系统，因此服务器的运行情况不影响监控功能，例如服务器宕机后，可以利用IPMI远程收集信息和重启。在计算机领域这种管理方式通常叫做带外管理**（**Out-of-band management），特指使用独立管理通道进行设备维护。它允许系统管理员远程监控和管理服务器和其他网络设备，无论这些设备是否处于开机状态。
 IPMI只定义架构和接口格式，详细实现各厂商没有统一标准。
 IPMI结构 IPMI的主控叫BMC（baseboard management controller），其他管理控制器叫做卫星控制器（satellite controllers）。BMC是定制的嵌入式控制器，运行管理系统软件；管理控制器与平台的硬件连接，获取温度、电源、风扇转速、操作系统状态等信心。BMC与周边控制器通过IPMB总线连接，IPMB是I2C的增强实现。BMC也可以通过IPMC总线或桥与其他的BMC及其附属控制器连接。
@@ -81,10 +81,10 @@ Side-band vs. out-of-band IPMI卡在实现上分两种，一种是BMC提供独�
     
     <item>
       <title>Linux驱动模型Probe解惑</title>
-      <link>https://www.sukihiro.cn/2017/10/31/linux-driver-model/</link>
+      <link>http://sukihiro.cn/2017/10/31/linux-driver-model/</link>
       <pubDate>Tue, 31 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2017/10/31/linux-driver-model/</guid>
+      <guid>http://sukihiro.cn/2017/10/31/linux-driver-model/</guid>
       <description>问题 首先来回顾下，Linux设备驱动模型中bus、device和driver三者的关系：
  bus是物理总线的抽象。 device是设备抽象，存在于bus之上。 driver是驱动抽象，注册到bus上，用于驱动bus上的特定device。 device和driver通过bus提供的match方法来匹配（通常是使用设备ID进行匹配）。 driver匹配到device后，调用driver的probe接口驱动device。 一个driver可以驱动多个相同的设备或者不同的设备。  一个driver匹配并驱动多个device的情形比较常见，比如一个igb驱动可以驱动多块intel网卡（可以是相同型号，也可以是不同型号），这是由驱动的id_table和驱动的处理逻辑决定的。那么自然而然的一个问题是：如果系统有多个driver都可以匹配到一个device，系统会怎么处理？换句话说，Linux是否允许两个driver服务同一个device？
 实验 带着这样的疑问，我做了下面这个实验。
@@ -94,20 +94,20 @@ $ lspci 00:00.0 Host bridge: Intel Corporation Skylake Host Bridge/DRAM Register
     
     <item>
       <title>IRQ Balance</title>
-      <link>https://www.sukihiro.cn/2017/02/05/irq-balance/</link>
+      <link>http://sukihiro.cn/2017/02/05/irq-balance/</link>
       <pubDate>Sun, 05 Feb 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2017/02/05/irq-balance/</guid>
+      <guid>http://sukihiro.cn/2017/02/05/irq-balance/</guid>
       <description>关于Linux的中断的balance，这篇文章写的很好，可以学习一下。看完后我的理解是这样的:
  多核情况下，为了发挥并发优势，希望中断能分发到不同的核上并发处理，但是需要注意，数据在不同CPU的Cache上来回的迁移是很耗性能的，因此Linux的默认行为也是将某一中断绑定到一个核，而不是在多个核上轮播。 但是一般中断处理代码都比较短，Cache的数据量不大，因此如果能自动在多个CPU上轮播中断是有可能提升性能的。但是问题又来了，网卡的收发包过程中有TCP连接状态的缓存，是非常适合Cache进行缓存的，因此在这种情况下轮播中断变得不可取，因为会导致严重的Cache数据颠簸，性能大大下降。 为了解决这个问题，现代的网卡都是采用PCI MSIX中断，也就是单设备多中断，可以为每个硬件收发队列分配一个中断，然后把每个中断绑定到不同的核上，这样基本上就解决了上面的问题，即能多核并发，又能兼顾收发包的局部性缓存带来的性能收益（网卡驱动会根据IP地址的hash放到对应的队列。） 最后一点，服务器设备比较多，有可能发生高速设备的中断数大于CPU核数，那么就会有一个核处理2个以上中断的情况发上，而这个基本上是没办法提前预知的（和CPU架构、核数、设备拓扑等相关），所以只能通过/proc/irq接口来手动调节。有个用户程序叫irqbalance可以自动做中断均衡，而且据说新版本评价不错，我自己没试过，但我认为要想获取最佳性能还得手动设置affinity。  </description>
     </item>
     
     <item>
       <title>Docker初试</title>
-      <link>https://www.sukihiro.cn/2017/01/02/try-docker/</link>
+      <link>http://sukihiro.cn/2017/01/02/try-docker/</link>
       <pubDate>Mon, 02 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2017/01/02/try-docker/</guid>
+      <guid>http://sukihiro.cn/2017/01/02/try-docker/</guid>
       <description>要了解一样东西，最简单的入门方法无非是去使用它，跟它交互，一步步填补概念和纠正已有认知。从今天开始踏上Docker之路！
 安装 ubuntu 16.04上的安装还是比较方便的，根据官方文档，添加APT源，然后直接apt-get install docker-engine就ok了。具体命令如下：
 $ sudo apt-get update $ sudo apt-get install apt-transport-https ca-certificates $ sudo apt-key adv \ --keyserver hkp://ha.pool.sks-keyservers.net:80 \ --recv-keys 58118E89F3A912897C070ADBF76221572C52609D $ echo &amp;quot;deb https://apt.dockerproject.org/repo ubuntu-xenial main&amp;quot; | sudo tee /etc/apt/sources.list.d/docker.list $ sudo apt-get update $ sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual $ sudo apt-get install docker-engine 小试 开启docker服务 docker daemon负责接收docker工具发过来的命令，然后做相应的操作，因此首先要开启它：
@@ -117,10 +117,10 @@ $ sudo docker run hello-world 如果正常一切正常，应该有如下输出�
     
     <item>
       <title>readl和raw_readl语义区别</title>
-      <link>https://www.sukihiro.cn/2016/08/27/raw_readl/</link>
+      <link>http://sukihiro.cn/2016/08/27/raw_readl/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2016/08/27/raw_readl/</guid>
+      <guid>http://sukihiro.cn/2016/08/27/raw_readl/</guid>
       <description>进行Linux驱动方面开发的程序员，经常需要使用readl/writel系列函数对Memory-Mapped IO进行读写。那么readl/__readl/raw_readl/__raw_readl几个函数的具体语义有何差别呢？
 内核中关于这几个函数的说明非常有限，根据stackoverflow上的这个问答，我们可以总结为：
   raw前缀只与byteorder相关，即readl/writel是linux默认的小端操作，而raw_readl/raw_writel是native访问。也就是说：如果是小端系统，raw_readl与readl相同，如果是大端系统，raw_readl与readl的有字节序差别。
@@ -130,10 +130,10 @@ $ sudo docker run hello-world 如果正常一切正常，应该有如下输出�
     
     <item>
       <title>GNU三元操作符扩展</title>
-      <link>https://www.sukihiro.cn/2016/03/03/ternary-op-extension/</link>
+      <link>http://sukihiro.cn/2016/03/03/ternary-op-extension/</link>
       <pubDate>Thu, 03 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://www.sukihiro.cn/2016/03/03/ternary-op-extension/</guid>
+      <guid>http://sukihiro.cn/2016/03/03/ternary-op-extension/</guid>
       <description>Linux内核随处可见到关于三元操作符？:的这种使用方法：
 rdev-&amp;gt;map_name = map_name ?: RC_MAP_EMPTY; 这是GNU C的关于标准C三元操作符?:的一个扩展，用来省略条件表达式的中间参数。也就是说， x ? : y 与 x ？ x : y完全等价。
 所有GNU扩展都在GCC手册的Extensions to the C Language Family章节有详细描述。要注意，这些写法仅适合GCC编译器，如果要编写可移植的代码，那么就要格外小心。</description>
