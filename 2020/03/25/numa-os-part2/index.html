@@ -21,7 +21,7 @@ numactl --cpubind=0 --membind=0,1 program 其意义为：在节点0上的CPU运�
 numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为： 对命名共享内存interleaved进行设置，其策略为全节点交织分配，大小为1G。">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="generator" content="Hugo 0.95.0" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="操作系统对NUMA支持情况：OS部分">
@@ -41,9 +41,9 @@ numactl --cpubind=0 --membind=0,1 program 其意义为：在节点0上的CPU运�
 下面是使用numactl更改共享内存段的分配策略的实例：
 numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为： 对命名共享内存interleaved进行设置，其策略为全节点交织分配，大小为1G。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="http://sukihiro.cn/2020/03/25/numa-os-part2/">
-        <link rel="stylesheet" href="http://sukihiro.cn/dist/site.css">
-        <link rel="stylesheet" href="http://sukihiro.cn/dist/syntax.css">
+<meta property="og:url" content="https://sukihiro.cn/2020/03/25/numa-os-part2/">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -62,11 +62,11 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="http://sukihiro.cn/">Chris&#39; Blog</a>
+                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
                             </h1>
                         
                         
-                            <a class="button-square" href="http://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
                         
                         
                         
@@ -79,7 +79,7 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
                         
                         
                         
-                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@gmail.com">
+                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@foxmail.com">
                                 <i class="fa fa-envelope" aria-hidden="true"></i>
                             </a>
                         
@@ -162,11 +162,11 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
 <li>获取NUMA硬件拓扑</li>
 </ul>
 <p>下面是使用numactl设定进程策略的实例：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"> numactl --cpubind<span class="o">=</span><span class="m">0</span> --membind<span class="o">=</span>0,1 program
-</code></pre></div><p>其意义为：在节点0上的CPU运行名为program的程序，并且只在节点0，1上分配内存。Cpubind的参数是节点编号，而不是cpu编号。在每个节点上有多个CPU的系统上，编号的定义顺序可能会不同。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"> numactl --cpubind<span class="o">=</span><span class="m">0</span> --membind<span class="o">=</span>0,1 program
+</span></span></code></pre></div><p>其意义为：在节点0上的CPU运行名为program的程序，并且只在节点0，1上分配内存。Cpubind的参数是节点编号，而不是cpu编号。在每个节点上有多个CPU的系统上，编号的定义顺序可能会不同。</p>
 <p>下面是使用numactl更改共享内存段的分配策略的实例：</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell"> numactl --length<span class="o">=</span>1G --file<span class="o">=</span>/dev/shm/interleaved --interleave<span class="o">=</span>all
-</code></pre></div><p>其意义为： 对命名共享内存interleaved进行设置，其策略为全节点交织分配，大小为1G。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"> numactl --length<span class="o">=</span>1G --file<span class="o">=</span>/dev/shm/interleaved --interleave<span class="o">=</span>all
+</span></span></code></pre></div><p>其意义为： 对命名共享内存interleaved进行设置，其策略为全节点交织分配，大小为1G。</p>
 <p><strong>numastat</strong>是获取NUMA内存访问统计信息的命令行工具。对于系统中的每个节点，内核维护了一些有关NUMA分配状态的统计数据。numastat命令会基于节点对内存的申请，分配，转移，失败等等做出统计，也会报告NUMA策略的执行状况。这些信息对于测试NUMA策略的有效性是非常有用的。</p>
 <h4 id="22-libnuma">2.2 LIBNUMA</h4>
 <p>尽管numactl能够用作进程级别的内存控制，但其缺点也很明显：分配策略作用于整个进程，无法指定到线程或者特定内存区域。Libnuma为更加精细的控制提供了API接口。</p>
@@ -189,21 +189,21 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
 <p>系统的负载平衡可以按照触发的类型分为事件平衡（event balancing）和主动平衡（active balancing）。其中时间平衡时候特定事件触发的，如任务状态的变化(如CPU进入IDLE状态） 或特殊的系统调用(fork/clone/exec)	，而主动平衡是指系统按照一定的时间间隔进行动态的负载平衡。对于这两类的负载平衡，调度域有不同的。</p>
 <h4 id="事件平衡">事件平衡</h4>
 <p>对于事件触发类平衡，系统定义了若干属性，用来确定一个调度域的调度策略：</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define SD_LOAD_BALANCE         0x0001  </span><span class="cm">/* Do load balancing on this domain. */</span><span class="cp">
-</span><span class="cp">#define SD_BALANCE_NEWIDLE      0x0002  </span><span class="cm">/* Balance when about to become idle */</span><span class="cp">
-</span><span class="cp">#define SD_BALANCE_EXEC         0x0004  </span><span class="cm">/* Balance on exec */</span><span class="cp">
-</span><span class="cp">#define SD_BALANCE_FORK         0x0008  </span><span class="cm">/* Balance on fork, clone */</span><span class="cp">
-</span><span class="cp">#define SD_BALANCE_WAKE         0x0010  </span><span class="cm">/* Balance on wakeup */</span><span class="cp">
-</span><span class="cp">#define SD_WAKE_AFFINE          0x0020  </span><span class="cm">/* Wake task to waking CPU */</span><span class="cp">
-</span><span class="cp">#define SD_SHARE_CPUCAPACITY    0x0080  </span><span class="cm">/* Domain members share cpu power */</span><span class="cp">
-</span><span class="cp">#define SD_SHARE_POWERDOMAIN    0x0100  </span><span class="cm">/* Domain members share power domain */</span><span class="cp">
-</span><span class="cp">#define SD_SHARE_PKG_RESOURCES  0x0200  </span><span class="cm">/* Domain members share cpu pkg resources */</span><span class="cp">
-</span><span class="cp">#define SD_SERIALIZE            0x0400  </span><span class="cm">/* Only a single load balancing instance */</span><span class="cp">
-</span><span class="cp">#define SD_ASYM_PACKING         0x0800  </span><span class="cm">/* Place busy groups earlier in the domain */</span><span class="cp">
-</span><span class="cp">#define SD_PREFER_SIBLING       0x1000  </span><span class="cm">/* Prefer to place tasks in a sibling domain */</span><span class="cp">
-</span><span class="cp">#define SD_OVERLAP              0x2000  </span><span class="cm">/* sched_domains of this level overlap */</span><span class="cp">
-</span><span class="cp">#define SD_NUMA                 0x4000  </span><span class="cm">/* cross-node balancing */</span><span class="cp">
-</span></code></pre></div><p>如果一个逻辑 CPU 进入了 IDLE 状态，并且它所属的 domain 设置了 SD_BALANCE_NEWIDLE，则马上就会进行 balance，把忙的 CPU 上的进程 move 过来，从而最大的发挥多 CPU 的优势。而SD_BALANCE_WAKE是指，如果一个进程wakeup时候可以在该域内进行迁移。一般在最低层级的Domain上就会设置SD_BALANCE_NEWIDLE和SD_BALANCE_WAKE，因为在SMT级别，逻辑CPU基本上是共享所有的资源的（主要是各级Cache），因此平衡带来的开销极小。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define SD_LOAD_BALANCE         0x0001  </span><span class="cm">/* Do load balancing on this domain. */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_BALANCE_NEWIDLE      0x0002  </span><span class="cm">/* Balance when about to become idle */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_BALANCE_EXEC         0x0004  </span><span class="cm">/* Balance on exec */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_BALANCE_FORK         0x0008  </span><span class="cm">/* Balance on fork, clone */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_BALANCE_WAKE         0x0010  </span><span class="cm">/* Balance on wakeup */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_WAKE_AFFINE          0x0020  </span><span class="cm">/* Wake task to waking CPU */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_SHARE_CPUCAPACITY    0x0080  </span><span class="cm">/* Domain members share cpu power */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_SHARE_POWERDOMAIN    0x0100  </span><span class="cm">/* Domain members share power domain */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_SHARE_PKG_RESOURCES  0x0200  </span><span class="cm">/* Domain members share cpu pkg resources */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_SERIALIZE            0x0400  </span><span class="cm">/* Only a single load balancing instance */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_ASYM_PACKING         0x0800  </span><span class="cm">/* Place busy groups earlier in the domain */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_PREFER_SIBLING       0x1000  </span><span class="cm">/* Prefer to place tasks in a sibling domain */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_OVERLAP              0x2000  </span><span class="cm">/* sched_domains of this level overlap */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SD_NUMA                 0x4000  </span><span class="cm">/* cross-node balancing */</span><span class="cp">
+</span></span></span></code></pre></div><p>如果一个逻辑 CPU 进入了 IDLE 状态，并且它所属的 domain 设置了 SD_BALANCE_NEWIDLE，则马上就会进行 balance，把忙的 CPU 上的进程 move 过来，从而最大的发挥多 CPU 的优势。而SD_BALANCE_WAKE是指，如果一个进程wakeup时候可以在该域内进行迁移。一般在最低层级的Domain上就会设置SD_BALANCE_NEWIDLE和SD_BALANCE_WAKE，因为在SMT级别，逻辑CPU基本上是共享所有的资源的（主要是各级Cache），因此平衡带来的开销极小。</p>
 <p>当一个进行调用 exec() 执行时，本来就是要加载一个新进程，缓存本来就会失效，所以原则上可以迁移到任何节点上。调度器就会找设置了 SD_BALANCE_EXEC 标记的最高层级 domain 。然后把进程移动到那个 domain 中最闲的 CPU 上。SD_BALANCE_FORK与SD_BALANCE_EXEC的情况类似。</p>
 <h4 id="主动平衡">主动平衡</h4>
 <p>每次时钟中断到来，如果发现当前 cpu 的运行队列需要进行下一次的 balance 的时间已经到了，则触发 SCHED_SOFTIRQ 软中断。根据 domain 的级别，从下往上扫描每一级 Scheduling Domain 。如果发现这个 domain 的 balance 之间的间隔时间到了，则进一步进行 task 的迁移。不同级别的 domain 是会有不同的间隔时间的。而且级别越高值越大，因为移动 task 的代价越大。</p>
@@ -244,13 +244,35 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
                 <a href="/tags/architecture/">Architecture</a>
         </p>
     <div class="share">
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fsukihiro.cn%2f2020%2f03%2f25%2fnuma-os-part2%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" aria-label="Share on Facebook">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
     </div>
 </footer>
 
-
         
     <div class="comments">
-        
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "sukihiro" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
     </div>
 
     </article>
@@ -263,7 +285,7 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="http://sukihiro.cn/">Chris&#39; Blog</a>
+                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -271,7 +293,7 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
                 </div>
 
                 <p class="footer-copyright">
-                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                    <span>&copy; 2022 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
                 </p>
                 <p class="footer-copyright">
                     <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
@@ -280,9 +302,9 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
             </div>
         </footer>
 
-        <script src="http://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
-        <script src="http://sukihiro.cn/js/jquery.fitvids.js"></script>
-        <script src="http://sukihiro.cn/js/scripts.js"></script>
+        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://sukihiro.cn/js/scripts.js"></script>
     </body>
 </html>
 

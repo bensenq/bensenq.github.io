@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Architecture on Chris&#39; Blog</title>
-    <link>http://sukihiro.cn/tags/architecture/</link>
+    <link>https://sukihiro.cn/tags/architecture/</link>
     <description>Recent content in Architecture on Chris&#39; Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <copyright>chris</copyright>
-    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="http://sukihiro.cn/tags/architecture/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Mar 2020 17:03:40 +0000</lastBuildDate><atom:link href="https://sukihiro.cn/tags/architecture/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>操作系统对NUMA支持情况：OS部分</title>
-      <link>http://sukihiro.cn/2020/03/25/numa-os-part2/</link>
+      <link>https://sukihiro.cn/2020/03/25/numa-os-part2/</link>
       <pubDate>Wed, 25 Mar 2020 17:03:40 +0000</pubDate>
       
-      <guid>http://sukihiro.cn/2020/03/25/numa-os-part2/</guid>
+      <guid>https://sukihiro.cn/2020/03/25/numa-os-part2/</guid>
       <description>NUMA-Aware操作系统对NUMA系统的支持分为两个层面：
  操作系统本身完成大多数关于进程、内存、IO位置的决策，向用户程序隐藏NUMA拓扑信息的细节。这样做的好处操作系统可以进行全局的NUMA资源优化，同时用户程序可以透明的使用NUMA硬件资源而无需关心底层亲缘性细节。 操作系统同时提供一组用户接口（NUMA API），以供特殊需求的用户对NUMA内存分配、调度策略进行重载和显式的控制，以实现复杂应用的手动调优。  1. NUMA系统内存分配 Linux的NUMA系统的内存按照Node划分，一个NUMA Node对应一个Memory Node。一个Memory Node下根据不同的用途划分为不同的Zones（如ZONE_DMA、ZONE_NORMAL等）。
 1.1 内存分配策略 NUMA系统下从哪里分配内存是由Memory Policies决定的。内存分配策略可以针对全系统级别的（System Default Policy），也可以针对某一进程（Task/Process Policy），还可以针对进程中的某一段区域（VMA Policy）。如果考虑到动态共享库问题，还包括共享级策略（Shared Policy）。就优先级而言，进程级的策略高于系统默认策略，而内存区域的策略又可以重载进程级的策略。系统的默认Policy是由系统进程级的内存分配策略可以通过fork进行继承。系统提供get/set_mempolicy和mbind系统调用，以供
@@ -33,10 +33,10 @@ numactl --length=1G --file=/dev/shm/interleaved --interleave=all 其意义为：
     
     <item>
       <title>操作系统对NUMA支持情况：NUMA基础</title>
-      <link>http://sukihiro.cn/2020/03/25/numa-os-part1/</link>
+      <link>https://sukihiro.cn/2020/03/25/numa-os-part1/</link>
       <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
       
-      <guid>http://sukihiro.cn/2020/03/25/numa-os-part1/</guid>
+      <guid>https://sukihiro.cn/2020/03/25/numa-os-part1/</guid>
       <description>1. NUMA简介 NUMA表示Non-Uniform Memory Access，非均匀内存访问模型，通常是指内存到每个CPU的&amp;quot;距离&amp;quot;并不相同，这里&amp;quot;距离&amp;quot;同时包括延迟和带宽。在NUMA系统中，这种非均匀性还会扩展到IO资源（主要是PCIE设备），即CPU与IO资源的&amp;quot;距离&amp;quot;以及设备与内存的&amp;quot;距离&amp;quot;也是不同的。一般来说NUMA机器可以访问系统的所有资源（即统一编址特性），只是访问速率不同而已。
 NUMA中使用Node表示一组资源（例如CPUs、Memory、I/O)。在某些系统中一个Node可能只包含某几类资源而不是全部，有些系统中一个Node就包括所以这些种类。Node间的互联有不同的形式，但是一般来说Node之间的延迟会比Node内大，而带宽通常会比Node内低。
 NUMA上的软件聚焦在Locality上，即尽可能地使用离设备（这里CPU也是算设备）近的资源，减少Node间的数据流量交互。对于Node间有高速互联的系统，把对资源（内存和IO）的使用分散到不同的节点上，而不是仅仅使用本地资源，有时反而能够取得更好的系统带宽（原因是能够存储器控制器的利用率更高），但是这种方法并不普适。
@@ -56,10 +56,10 @@ Intel x86物理CPU里没有放在Core里的部件都被叫做Uncore。Uncore里�
     
     <item>
       <title>RISC-V与OpenRISC</title>
-      <link>http://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
+      <link>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</link>
       <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
       
-      <guid>http://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
+      <guid>https://sukihiro.cn/2018/04/24/riscv-vs-openrisc/</guid>
       <description>2016年的时候，第一次听说RISC-V，到去年在中国开RISC-V顶会，可以说RISC-V已经在商用体系架构领域站稳脚跟。作为一个开放架构，第一反应就是拿它和OpenRISC比较。研究了下，主要体现在许可证以及技术两个层面。
 开源协议 OpenRISC和RISC-V都是开放处理器架构，但是二者的许可证不同。OpenRISC采用了GPL和LGPL作为其开源协议，其中硬件设计采用LGPL（宽松的GPL），而模型和固件采用GPL。了解开源License的都清楚，GPL的强传染性导致其很难商业化，因为基于GPL开发的东西也必须开源，对于二次开发的知识产权根本没法保护。宽松的GPL没有这么强的传染性，即以链接的方式适用LGPL库是不需要开源代码的。很显然，OpenRISC的模型和固件的强开源特性让很多商业公司无法参与到其社区及生态的建设当中。RISC-V则采用了BSD协议，这个协议的要求非常宽松，简单来说，对于BSD代码的使用，没有任何限制包括闭源和商用。很显然，RISC-V采用这个协议是为了吸引更多的人和公司参与到社区和生态的建设当中。当然，BSD协议本来就是Berkelay的东西（最早是用发布BSD Unix），从伯克利的文化风格来讲，RISC-V采用BSD也算是情理之中。
 技术层面 从RISC-V的官方的这篇Blog来看，技术层面的分歧导致了它们没有基于OpenRISC开发，而是设计全新的ISA。OpenRISC的主要技术问题包括：

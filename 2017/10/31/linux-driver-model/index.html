@@ -7,15 +7,15 @@
         <meta name="description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
-        <meta name="generator" content="Hugo 0.80.0" />
+        <meta name="generator" content="Hugo 0.95.0" />
         <meta name="robots" content="index,follow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:title" content="Linux驱动模型Probe解惑">
 <meta property="og:description" content="如果系统有多个driver都可以匹配到一个device，系统会怎么处理?">
 <meta property="og:type" content="article">
-<meta property="og:url" content="http://sukihiro.cn/2017/10/31/linux-driver-model/">
-        <link rel="stylesheet" href="http://sukihiro.cn/dist/site.css">
-        <link rel="stylesheet" href="http://sukihiro.cn/dist/syntax.css">
+<meta property="og:url" content="https://sukihiro.cn/2017/10/31/linux-driver-model/">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
+        <link rel="stylesheet" href="https://sukihiro.cn/dist/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,600,700,300&subset=latin,cyrillic-ext,latin-ext,cyrillic">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         
@@ -34,11 +34,11 @@
                     <div class="site-title-wrapper">
                         
                             <h1 class="site-title">
-                                <a href="http://sukihiro.cn/">Chris&#39; Blog</a>
+                                <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
                             </h1>
                         
                         
-                            <a class="button-square" href="http://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                            <a class="button-square" href="https://sukihiro.cn/index.xml" aria-label="RSS"><i class="fa fa-rss" aria-hidden="true"></i></a>
                         
                         
                         
@@ -51,7 +51,7 @@
                         
                         
                         
-                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@gmail.com">
+                            <a class="button-square button-social hint--top" data-hint="Email" aria-label="Send an Email" href="mailto:chris.wei.cui@foxmail.com">
                                 <i class="fa fa-envelope" aria-hidden="true"></i>
                             </a>
                         
@@ -115,7 +115,7 @@
 <h2 id="实验">实验</h2>
 <p>带着这样的疑问，我做了下面这个实验。</p>
 <p>首先，查看下系统的PCI设备驱动情况，挑选一个测试对象。</p>
-<pre><code>$ lspci 
+<pre tabindex="0"><code>$ lspci 
 00:00.0 Host bridge: Intel Corporation Skylake Host Bridge/DRAM Registers (rev 08)
 00:02.0 VGA compatible controller: Intel Corporation HD Graphics 520 (rev 07)
 00:14.0 USB controller: Intel Corporation Sunrise Point-LP USB 3.0 xHCI Controller (rev 21)
@@ -132,7 +132,7 @@
 02:00.0 Unassigned class [ff00]: Realtek Semiconductor Co., Ltd. RTS522A PCI Express Card Reader (rev 01)
 04:00.0 Network controller: Intel Corporation Wireless 8260 (rev 3a)
 </code></pre><p>可以看到<code>00:1f.6</code>设备是一块Intel网卡，我们就拿它试验。看看它的驱动情况：</p>
-<pre><code>$ lspci -v
+<pre tabindex="0"><code>$ lspci -v
 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection I219-V (rev 21)
         Subsystem: Lenovo Ethernet Connection I219-V
         Flags: bus master, fast devsel, latency 0, IRQ 128
@@ -143,127 +143,127 @@
 </code></pre><p>可以看到当前正在使用的驱动是<code>e1000e</code>模块。</p>
 <p>然后，构造一个可以匹配选中网卡的PCI设备驱动，观察驱动加载时系统的行为。</p>
 <p>代码直接从ldd3的pci_skel样例修改，只需要把id_table修改成目标网卡的vendor id和device id即可。</p>
-<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;linux/pci.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;linux/init.h&gt;</span><span class="cp">
-</span><span class="cp"></span>
-
-<span class="k">static</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="n">ids</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="p">{</span> <span class="n">PCI_DEVICE</span><span class="p">(</span><span class="mh">0x8086</span><span class="p">,</span> <span class="mh">0x1570</span><span class="p">),</span> <span class="p">},</span>
-	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="p">}</span>
-<span class="p">};</span>
-<span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pci</span><span class="p">,</span> <span class="n">ids</span><span class="p">);</span>
-
-<span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="nf">skel_get_revision</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">u8</span> <span class="n">revision</span><span class="p">;</span>
-
-	<span class="n">pci_read_config_byte</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">PCI_REVISION_ID</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">revision</span><span class="p">);</span>
-	<span class="k">return</span> <span class="n">revision</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">int</span> <span class="nf">probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="o">*</span><span class="n">id</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="cm">/* Do probing type stuff here.  
-</span><span class="cm">	 * Like calling request_region();
-</span><span class="cm">	 */</span>
-	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;pci_e1000e probing</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-	<span class="n">pci_enable_device</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-	
-	<span class="k">if</span> <span class="p">(</span><span class="n">skel_get_revision</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x42</span><span class="p">)</span>
-		<span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
-
-
-	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="cm">/* clean up any allocated resources and stuff here.
-</span><span class="cm">	 * like call release_region();
-</span><span class="cm">	 */</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="k">struct</span> <span class="n">pci_driver</span> <span class="n">pci_driver</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;pci_e1000e&#34;</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">id_table</span> <span class="o">=</span> <span class="n">ids</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">probe</span><span class="p">,</span>
-	<span class="p">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">remove</span><span class="p">,</span>
-<span class="p">};</span>
-
-<span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">pci_skel_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;%s:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">);</span>
-	<span class="k">return</span> <span class="n">pci_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">pci_skel_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="n">pci_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">&#34;GPL&#34;</span><span class="p">);</span>
-
-<span class="n">module_init</span><span class="p">(</span><span class="n">pci_skel_init</span><span class="p">);</span>
-<span class="n">module_exit</span><span class="p">(</span><span class="n">pci_skel_exit</span><span class="p">);</span>
-</code></pre></div><p>Makefile如下：</p>
-<div class="highlight"><pre class="chroma"><code class="language-makefile" data-lang="makefile"><span class="nv">obj-m</span>   <span class="o">:=</span> pci_e1000e.o
-
-<span class="nv">KERNELDIR</span> <span class="o">?=</span> /lib/modules/<span class="k">$(</span>shell uname -r<span class="k">)</span>/build
-<span class="nv">PWD</span>       <span class="o">:=</span> <span class="k">$(</span>shell <span class="nb">pwd</span><span class="k">)</span>
-
-<span class="nf">all</span><span class="o">:</span>
-        <span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>KERNELDIR<span class="k">)</span> <span class="nv">M</span><span class="o">=</span><span class="k">$(</span>PWD<span class="k">)</span>
-
-<span class="nf">clean</span><span class="o">:</span>
-        rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
-</code></pre></div><p>我在init和probe接口中增加了打印，跟踪流程。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/pci.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/init.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="n">ids</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span> <span class="n">PCI_DEVICE</span><span class="p">(</span><span class="mh">0x8086</span><span class="p">,</span> <span class="mh">0x1570</span><span class="p">),</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">MODULE_DEVICE_TABLE</span><span class="p">(</span><span class="n">pci</span><span class="p">,</span> <span class="n">ids</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="nf">skel_get_revision</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">u8</span> <span class="n">revision</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">pci_read_config_byte</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">PCI_REVISION_ID</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">revision</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">revision</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">probe</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">pci_device_id</span> <span class="o">*</span><span class="n">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="cm">/* Do probing type stuff here.  
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * Like calling request_region();
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;pci_e1000e probing</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">pci_enable_device</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">skel_get_revision</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x42</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">remove</span><span class="p">(</span><span class="k">struct</span> <span class="n">pci_dev</span> <span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="cm">/* clean up any allocated resources and stuff here.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * like call release_region();
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">pci_driver</span> <span class="n">pci_driver</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;pci_e1000e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">id_table</span> <span class="o">=</span> <span class="n">ids</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">probe</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">.</span><span class="n">remove</span> <span class="o">=</span> <span class="n">remove</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">pci_skel_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">printk</span><span class="p">(</span><span class="s">&#34;%s:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">pci_register_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="n">__exit</span> <span class="nf">pci_skel_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="n">pci_unregister_driver</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pci_driver</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">&#34;GPL&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">module_init</span><span class="p">(</span><span class="n">pci_skel_init</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">module_exit</span><span class="p">(</span><span class="n">pci_skel_exit</span><span class="p">);</span>
+</span></span></code></pre></div><p>Makefile如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">obj-m</span>   <span class="o">:=</span> pci_e1000e.o
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">KERNELDIR</span> <span class="o">?=</span> /lib/modules/<span class="k">$(</span>shell uname -r<span class="k">)</span>/build
+</span></span><span class="line"><span class="cl"><span class="nv">PWD</span>       <span class="o">:=</span> <span class="k">$(</span>shell <span class="nb">pwd</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">$(</span>MAKE<span class="k">)</span> -C <span class="k">$(</span>KERNELDIR<span class="k">)</span> <span class="nv">M</span><span class="o">=</span><span class="k">$(</span>PWD<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+</span></span></code></pre></div><p>我在init和probe接口中增加了打印，跟踪流程。</p>
 <p>直接make生成pci_e1000e.ko模块，加载测试。</p>
-<pre><code>$ make
+<pre tabindex="0"><code>$ make
 $ sudo insmod pci_e1000e.ko
 </code></pre><p>dmesg查看驱动加载情况，发现内核只新增了一行打印：</p>
-<pre><code>pci_skel_init:52
+<pre tabindex="0"><code>pci_skel_init:52
 </code></pre><p>说明驱动成功加载，但是压根没有进入probe接口。由此看来，内核应该不会让一个device同时被两个driver匹配上。</p>
 <h2 id="分析">分析</h2>
 <p>直接从源码分析，可以看到设备驱动加载后，<code>pci_register_driver</code>调用流程大致如下：</p>
 <p><img src="/images/driver_attatch.svg" alt=""></p>
 <p>其核心代码是<code>driver_attatch</code>，其作用是driver binding，它调用<code>bus_for_each_dev</code>来遍历总线上的所有设备，然后对每一个设备调用<code>__driver_attach</code>函数。</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="k">return</span> <span class="n">bus_for_each_dev</span><span class="p">(</span><span class="n">drv</span><span class="o">-&gt;</span><span class="n">bus</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">drv</span><span class="p">,</span> <span class="n">__driver_attach</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div><p>我们想要的答案就在<code>__driver_attach</code>函数的实现里：</p>
-<div class="highlight"><pre class="chroma"><code class="language-C" data-lang="C"><span class="k">static</span> <span class="kt">int</span> <span class="nf">__driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
-
-<span class="p">{</span>
-    <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
-
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">driver_match_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-            <span class="cm">/* no match */</span>
-            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="n">EPROBE_DEFER</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Device match requests probe deferral</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-            <span class="n">driver_deferred_probe_add</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Bus failed to match device: %d&#34;</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
-            <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
-                    <span class="p">}</span> <span class="cm">/* ret &gt; 0 means positive match */</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>        <span class="cm">/* Needed for USB */</span>
-                <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
-        <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">)</span>
-                <span class="n">driver_probe_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
-        <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>
-                <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
-
-        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><p>可以看到，在<code>driver_match_device</code>匹配成功以后，并不是直接进行probe的，而是先要判断<code>dev-&gt;driver</code>是否为空，如果不为空就不进行<code>driver_probe_device</code>了。也就是说，如果一个device已经绑定了一个driver，就不允许尝试绑定第二个driver了。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">bus_for_each_dev</span><span class="p">(</span><span class="n">drv</span><span class="o">-&gt;</span><span class="n">bus</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">drv</span><span class="p">,</span> <span class="n">__driver_attach</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>我们想要的答案就在<code>__driver_attach</code>函数的实现里：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">__driver_attach</span><span class="p">(</span><span class="k">struct</span> <span class="n">device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">device_driver</span> <span class="o">*</span><span class="n">drv</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ret</span> <span class="o">=</span> <span class="n">driver_match_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="cm">/* no match */</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="o">-</span><span class="n">EPROBE_DEFER</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Device match requests probe deferral</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">driver_deferred_probe_add</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">dev_dbg</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s">&#34;Bus failed to match device: %d&#34;</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">}</span> <span class="cm">/* ret &gt; 0 means positive match */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>        <span class="cm">/* Needed for USB */</span>
+</span></span><span class="line"><span class="cl">                <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">device_lock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">driver</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">driver_probe_device</span><span class="p">(</span><span class="n">drv</span><span class="p">,</span> <span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">device_unlock</span><span class="p">(</span><span class="n">dev</span><span class="o">-&gt;</span><span class="n">parent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>可以看到，在<code>driver_match_device</code>匹配成功以后，并不是直接进行probe的，而是先要判断<code>dev-&gt;driver</code>是否为空，如果不为空就不进行<code>driver_probe_device</code>了。也就是说，如果一个device已经绑定了一个driver，就不允许尝试绑定第二个driver了。</p>
 
 </div>
 
@@ -273,13 +273,35 @@ $ sudo insmod pci_e1000e.ko
                 <a href="/tags/device-driver/">Device Driver</a>
         </p>
     <div class="share">
+            <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fsukihiro.cn%2f2017%2f10%2f31%2flinux-driver-model%2f"
+                onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" aria-label="Share on Facebook">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
     </div>
 </footer>
 
-
         
     <div class="comments">
-        
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "sukihiro" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
     </div>
 
     </article>
@@ -292,7 +314,7 @@ $ sudo insmod pci_e1000e.ko
             <div class="container">
                 <div class="site-title-wrapper">
                     <h1 class="site-title">
-                        <a href="http://sukihiro.cn/">Chris&#39; Blog</a>
+                        <a href="https://sukihiro.cn/">Chris&#39; Blog</a>
                     </h1>
                     <a class="button-square button-jump-top js-jump-top" href="#" aria-label="Back to Top">
                         <i class="fa fa-angle-up" aria-hidden="true"></i>
@@ -300,7 +322,7 @@ $ sudo insmod pci_e1000e.ko
                 </div>
 
                 <p class="footer-copyright">
-                    <span>&copy; 2020 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
+                    <span>&copy; 2022 / Powered by <a href="https://gohugo.io/">Hugo</a></span>
                 </p>
                 <p class="footer-copyright">
                     <span><a href="https://github.com/roryg/ghostwriter">Ghostwriter theme</a> By <a href="http://jollygoodthemes.com">JollyGoodThemes</a></span>
@@ -309,9 +331,9 @@ $ sudo insmod pci_e1000e.ko
             </div>
         </footer>
 
-        <script src="http://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
-        <script src="http://sukihiro.cn/js/jquery.fitvids.js"></script>
-        <script src="http://sukihiro.cn/js/scripts.js"></script>
+        <script src="https://sukihiro.cn/js/jquery-1.11.3.min.js"></script>
+        <script src="https://sukihiro.cn/js/jquery.fitvids.js"></script>
+        <script src="https://sukihiro.cn/js/scripts.js"></script>
     </body>
 </html>
 
