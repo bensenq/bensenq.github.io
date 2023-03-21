@@ -10,9 +10,9 @@
 但关键问题是，main函数里能拿到tmp能拿到这个不应该返回的局部变量地址吗？或者说，尽管无意义，但是func是否可以把这个局部变量的地址返回给调用者（caller）吗？
 C语言最大的魅力就在于灵活高效，其精髓就在于指针，但指针是把双刃剑。在遇到这个问题前，我认为caller是可以拿到栈上的这个地址的，也是基于C语言给我的这个印象。我想：虽然这样做是无意义或者危险的，但是C语言并不会阻止我们拿到一个局部变量的地址，毕竟那个局部变量曾经确实存在于一个确定的栈地址！而且拿到这个栈地址跟访问或使用这个内存地址并不是一回事儿！
 结果出乎我的意料。caller确实拿到了func的返回值（程序没有报错），但是拿到的却不是&amp;p[2]的地址，而是0。(看到这个结果时，脑子里是OMG，Why？)
-全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给call一个0。看来只能从C语言标准和编译器实现入手了。用gcc和return local variable address进行关键字搜索，总算有了一个明确的方向：这是一个未定义的行为（undefined behavior）。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。
+全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给caller一个0。看来只能从C语言标准和编译器实现入手了。用gcc和return local variable address进行关键字搜索，总算有了一个明确的方向：这是一个未定义的行为（undefined behavior）。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。
 我们来看看以上例子的反汇编：
-struct possibleSet *func() { 1149: f3 0f 1e fa endbr64 114d: 55 push %rbp 114e: 48 89 e5 mov %rsp,%rbp 1151: 48 81 ec b0 00 00 00 sub $0xb0,%rsp 1158: 64 48 8b 04 25 28 00 mov %fs:0x28,%rax 115f: 00 00 1161: 48 89 45 f8 mov %rax,-0x8(%rbp) 1165: 31 c0 xor %eax,%eax struct possibleSet p[10];  return &amp;p[0];  1167: b8 00 00 00 00 mov $0x0,%eax } 116c: 48 8b 55 f8 mov -0x8(%rbp),%rdx 1170: 64 48 33 14 25 28 00 xor %fs:0x28,%rdx 1177: 00 00 1179: 74 05 je 1180 &lt;func&#43;0x37&gt; 117b: e8 d0 fe ff ff callq 1050 &lt;__stack_chk_fail@plt&gt; 1180: c9 leaveq 1181: c3 retq 这里可以看到1167地址处mov $0x0,%eax，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。">
+struct possibleSet *func() {1149: f3 0f 1e fa endbr64114d: 55 push %rbp114e: 48 89 e5 mov %rsp,%rbp1151: 48 81 ec b0 00 00 00 sub $0xb0,%rsp1158: 64 48 8b 04 25 28 00 mov %fs:0x28,%rax115f: 00 001161: 48 89 45 f8 mov %rax,-0x8(%rbp)1165: 31 c0 xor %eax,%eaxstruct possibleSet p[10];return &amp;p[0];1167: b8 00 00 00 00 mov $0x0,%eax}116c: 48 8b 55 f8 mov -0x8(%rbp),%rdx1170: 64 48 33 14 25 28 00 xor %fs:0x28,%rdx1177: 00 001179: 74 05 je 1180 &lt;func&#43;0x37&gt;117b: e8 d0 fe ff ff callq 1050 &lt;__stack_chk_fail@plt&gt;1180: c9 leaveq1181: c3 retq 这里可以看到1167地址处mov $0x0,%eax，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。">
         <meta name="HandheldFriendly" content="True">
         <meta name="MobileOptimized" content="320">
         <meta name="generator" content="Hugo 0.95.0" />
@@ -25,9 +25,9 @@ struct possibleSet *func() { 1149: f3 0f 1e fa endbr64 114d: 55 push %rbp 114e: 
 但关键问题是，main函数里能拿到tmp能拿到这个不应该返回的局部变量地址吗？或者说，尽管无意义，但是func是否可以把这个局部变量的地址返回给调用者（caller）吗？
 C语言最大的魅力就在于灵活高效，其精髓就在于指针，但指针是把双刃剑。在遇到这个问题前，我认为caller是可以拿到栈上的这个地址的，也是基于C语言给我的这个印象。我想：虽然这样做是无意义或者危险的，但是C语言并不会阻止我们拿到一个局部变量的地址，毕竟那个局部变量曾经确实存在于一个确定的栈地址！而且拿到这个栈地址跟访问或使用这个内存地址并不是一回事儿！
 结果出乎我的意料。caller确实拿到了func的返回值（程序没有报错），但是拿到的却不是&amp;p[2]的地址，而是0。(看到这个结果时，脑子里是OMG，Why？)
-全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给call一个0。看来只能从C语言标准和编译器实现入手了。用gcc和return local variable address进行关键字搜索，总算有了一个明确的方向：这是一个未定义的行为（undefined behavior）。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。
+全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给caller一个0。看来只能从C语言标准和编译器实现入手了。用gcc和return local variable address进行关键字搜索，总算有了一个明确的方向：这是一个未定义的行为（undefined behavior）。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。
 我们来看看以上例子的反汇编：
-struct possibleSet *func() { 1149: f3 0f 1e fa endbr64 114d: 55 push %rbp 114e: 48 89 e5 mov %rsp,%rbp 1151: 48 81 ec b0 00 00 00 sub $0xb0,%rsp 1158: 64 48 8b 04 25 28 00 mov %fs:0x28,%rax 115f: 00 00 1161: 48 89 45 f8 mov %rax,-0x8(%rbp) 1165: 31 c0 xor %eax,%eax struct possibleSet p[10];  return &amp;p[0];  1167: b8 00 00 00 00 mov $0x0,%eax } 116c: 48 8b 55 f8 mov -0x8(%rbp),%rdx 1170: 64 48 33 14 25 28 00 xor %fs:0x28,%rdx 1177: 00 00 1179: 74 05 je 1180 &lt;func&#43;0x37&gt; 117b: e8 d0 fe ff ff callq 1050 &lt;__stack_chk_fail@plt&gt; 1180: c9 leaveq 1181: c3 retq 这里可以看到1167地址处mov $0x0,%eax，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。">
+struct possibleSet *func() {1149: f3 0f 1e fa endbr64114d: 55 push %rbp114e: 48 89 e5 mov %rsp,%rbp1151: 48 81 ec b0 00 00 00 sub $0xb0,%rsp1158: 64 48 8b 04 25 28 00 mov %fs:0x28,%rax115f: 00 001161: 48 89 45 f8 mov %rax,-0x8(%rbp)1165: 31 c0 xor %eax,%eaxstruct possibleSet p[10];return &amp;p[0];1167: b8 00 00 00 00 mov $0x0,%eax}116c: 48 8b 55 f8 mov -0x8(%rbp),%rdx1170: 64 48 33 14 25 28 00 xor %fs:0x28,%rdx1177: 00 001179: 74 05 je 1180 &lt;func&#43;0x37&gt;117b: e8 d0 fe ff ff callq 1050 &lt;__stack_chk_fail@plt&gt;1180: c9 leaveq1181: c3 retq 这里可以看到1167地址处mov $0x0,%eax，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://sukihiro.cn/2022/03/20/return-local-addr/">
         <link rel="stylesheet" href="https://sukihiro.cn/dist/site.css">
@@ -133,29 +133,29 @@ struct possibleSet *func() { 1149: f3 0f 1e fa endbr64 114d: 55 push %rbp 114e: 
 <p>但关键问题是，main函数里能拿到tmp能拿到这个不应该返回的局部变量地址吗？或者说，尽管无意义，但是func是否可以把这个局部变量的地址返回给调用者（caller）吗？</p>
 <p>C语言最大的魅力就在于灵活高效，其精髓就在于指针，但指针是把双刃剑。在遇到这个问题前，我认为caller是可以拿到栈上的这个地址的，也是基于C语言给我的这个印象。我想：虽然这样做是无意义或者危险的，但是C语言并不会阻止我们拿到一个局部变量的地址，毕竟那个局部变量曾经确实存在于一个确定的栈地址！而且拿到这个栈地址跟访问或使用这个内存地址并不是一回事儿！</p>
 <p>结果出乎我的意料。caller确实拿到了func的返回值（程序没有报错），但是拿到的却不是&amp;p[2]的地址，而是0。(看到这个结果时，脑子里是OMG，Why？)</p>
-<p>全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给call一个0。看来只能从C语言标准和编译器实现入手了。用<code>gcc</code>和<code>return local variable address</code>进行关键字搜索，总算有了一个明确的方向：<strong>这是一个未定义的行为（undefined behavior）</strong>。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。</p>
+<p>全网搜索，大家都在讨论这个warning的原因，但是没有人讨论gcc为什么会给caller一个0。看来只能从C语言标准和编译器实现入手了。用<code>gcc</code>和<code>return local variable address</code>进行关键字搜索，总算有了一个明确的方向：<strong>这是一个未定义的行为（undefined behavior）</strong>。也就是说C语言没有对这种行为的后果做任何约束，编译器想怎么实现都可以！而gcc遇到这种情况就会给caller返回一个0。</p>
 <p>我们来看看以上例子的反汇编：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-asm" data-lang="asm"><span class="line"><span class="cl"><span class="nf">struct</span> <span class="no">possibleSet</span> <span class="p">*</span><span class="no">func</span><span class="p">()</span> <span class="err">{</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1149:</span>       <span class="nf">f3</span> <span class="mi">0</span><span class="no">f</span> <span class="mi">1</span><span class="no">e</span> <span class="no">fa</span>             <span class="no">endbr64</span>
-</span></span><span class="line"><span class="cl">    <span class="err">114</span><span class="nl">d:</span>       <span class="err">55</span>                      <span class="nf">push</span>   <span class="nv">%rbp</span>
-</span></span><span class="line"><span class="cl">    <span class="err">114</span><span class="nl">e:</span>       <span class="err">48</span> <span class="err">89</span> <span class="nf">e5</span>                <span class="no">mov</span>    <span class="nv">%rsp</span><span class="p">,</span><span class="nv">%rbp</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1151:</span>       <span class="err">48</span> <span class="err">81</span> <span class="nf">ec</span> <span class="no">b0</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span>    <span class="no">sub</span>    <span class="no">$0xb0</span><span class="p">,</span><span class="nv">%rsp</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1158:</span>       <span class="err">64</span> <span class="err">48</span> <span class="err">8</span><span class="nf">b</span> <span class="mi">04</span> <span class="mi">25</span> <span class="mi">28</span> <span class="mi">00</span>    <span class="no">mov</span>    <span class="nv">%fs</span><span class="p">:</span><span class="mi">0x28</span><span class="p">,</span><span class="nv">%rax</span>
-</span></span><span class="line"><span class="cl">    <span class="err">115</span><span class="nl">f:</span>       <span class="err">00</span> <span class="err">00</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1161:</span>       <span class="err">48</span> <span class="err">89</span> <span class="err">45</span> <span class="nf">f8</span>             <span class="no">mov</span>    <span class="nv">%rax</span><span class="p">,-</span><span class="mi">0x8</span><span class="p">(</span><span class="nv">%rbp</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1165:</span>       <span class="err">31</span> <span class="nf">c0</span>                   <span class="no">xor</span>    <span class="nv">%eax</span><span class="p">,</span><span class="nv">%eax</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">struct</span> <span class="no">possibleSet</span> <span class="no">p</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="c">;
-</span></span></span><span class="line"><span class="cl"><span class="c"></span>        <span class="no">return</span> <span class="err">&amp;</span><span class="no">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="c">;
-</span></span></span><span class="line"><span class="cl"><span class="c"></span>    <span class="mi">1167</span><span class="p">:</span>       <span class="no">b8</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span> <span class="mi">00</span>          <span class="no">mov</span>    <span class="no">$0x0</span><span class="p">,</span><span class="nv">%eax</span>
-</span></span><span class="line"><span class="cl"><span class="err">}</span>
-</span></span><span class="line"><span class="cl">    <span class="err">116</span><span class="nl">c:</span>       <span class="err">48</span> <span class="err">8</span><span class="nf">b</span> <span class="mi">55</span> <span class="no">f8</span>             <span class="no">mov</span>    <span class="p">-</span><span class="mi">0x8</span><span class="p">(</span><span class="nv">%rbp</span><span class="p">),</span><span class="nv">%rdx</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1170:</span>       <span class="err">64</span> <span class="err">48</span> <span class="err">33</span> <span class="err">14</span> <span class="err">25</span> <span class="err">28</span> <span class="err">00</span>    <span class="nf">xor</span>    <span class="nv">%fs</span><span class="p">:</span><span class="mi">0x28</span><span class="p">,</span><span class="nv">%rdx</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1177:</span>       <span class="err">00</span> <span class="err">00</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1179:</span>       <span class="err">74</span> <span class="err">05</span>                   <span class="nf">je</span>     <span class="mh">1180</span> <span class="p">&lt;</span><span class="no">func</span><span class="p">+</span><span class="mi">0x37</span><span class="p">&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="err">117</span><span class="nl">b:</span>       <span class="nf">e8</span> <span class="no">d0</span> <span class="no">fe</span> <span class="no">ff</span> <span class="no">ff</span>          <span class="no">callq</span>  <span class="mh">1050</span> <span class="p">&lt;</span><span class="no">__stack_chk_fail@plt</span><span class="p">&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1180:</span>       <span class="nf">c9</span>                      <span class="no">leaveq</span>
-</span></span><span class="line"><span class="cl">    <span class="err">1181:</span>       <span class="nf">c3</span>                      <span class="no">retq</span>
-</span></span></code></pre></div><p>这里可以看到1167地址处<code>mov $0x0,%eax</code>，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。</p>
+<pre tabindex="0"><code>struct possibleSet *func() {
+    1149:       f3 0f 1e fa             endbr64
+    114d:       55                      push   %rbp
+    114e:       48 89 e5                mov    %rsp,%rbp
+    1151:       48 81 ec b0 00 00 00    sub    $0xb0,%rsp
+    1158:       64 48 8b 04 25 28 00    mov    %fs:0x28,%rax
+    115f:       00 00
+    1161:       48 89 45 f8             mov    %rax,-0x8(%rbp)
+    1165:       31 c0                   xor    %eax,%eax
+        struct possibleSet p[10];
+        return &amp;p[0];
+    1167:       b8 00 00 00 00          mov    $0x0,%eax
+}
+    116c:       48 8b 55 f8             mov    -0x8(%rbp),%rdx
+    1170:       64 48 33 14 25 28 00    xor    %fs:0x28,%rdx
+    1177:       00 00
+    1179:       74 05                   je     1180 &lt;func+0x37&gt;
+    117b:       e8 d0 fe ff ff          callq  1050 &lt;__stack_chk_fail@plt&gt;
+    1180:       c9                      leaveq
+    1181:       c3                      retq
+</code></pre><p>这里可以看到1167地址处<code>mov $0x0,%eax</code>，返回值（eax寄存器）被赋了零。如果对例子稍作修改，将局部变量修改为静态变量，那么反汇编里就没有类似的处理了（具体实验代码略）。</p>
 <p>那么，这个undefined behavior在C标准里到底是怎么规定的呢？<a href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1124.pdf">这里</a>找到了一份C标准（ISO/IEC 9899），里面对这个问题有专门的说明。其中J.2附录里是所有undefined behavior的列表(节选）：</p>
 <blockquote>
 <p>The behavior is undefined in the following circumstances:</p>
